@@ -1,77 +1,69 @@
-'use client';
+"use client";
 import React, { useEffect, useState } from 'react';
-import { getPlans, checkout } from '../../services/api';
-import PlanCard from '../../components/PlanCard';
+import { getPlans, checkoutSubscription, getCurrentSubscription } from '../../lib/api';
+import Skeleton from '../../components/Skeleton';
+import { useToast } from '../../components/toast/ToastProvider';
+import PlanCard from '../../components/subscription/PlanCard';
 
-type Plan = {
-  id: string;
-  name: string;
-  description?: string;
-  price: number; // cêntimos
-  currency?: string;
-  interval?: string;
-};
-
-type CheckoutResponse = {
-  checkoutUrl?: string;
-  
-} & Record<string, unknown>;
-
-function getErrorMessage(err: unknown): string {
-  if (err instanceof Error) return err.message;
-  if (typeof err === 'string') return err;
-  try {
-    return JSON.stringify(err);
-  } catch {
-    return 'Erro desconhecido';
-  }
-}
+type Plan = { id: string; name: string; price: number; currency?: string; description?: string; interval?: string };
 
 export default function PlansPage() {
   const [plans, setPlans] = useState<Plan[]>([]);
+  const [currentPlanId, setCurrentPlanId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const { addToast } = useToast();
 
   useEffect(() => {
-    async function load() {
-      try {
-        // assumi que getPlans retorna um array compatível com Plan[]
-        const data = (await getPlans()) as Plan[];
-        setPlans(data);
-      } catch (err: unknown) {
-        setError(getErrorMessage(err) || 'Erro ao carregar planos');
-      }
-    }
-    load();
+    let mounted = true;
+    Promise.all([getPlans(), getCurrentSubscription()])
+      .then(([plansRes, subRes]: any) => {
+        if (!mounted) return;
+        setPlans(plansRes || []);
+        setCurrentPlanId(subRes?.plan?.id || null);
+      })
+      .catch((err) => { console.error(err); addToast({ type: 'error', message: 'Falha ao carregar planos.' }); })
+      .finally(() => setInitialLoading(false));
+    return () => { mounted = false; };
   }, []);
 
-  async function handleChoose(planId: string) {
+  async function handleSubscribe(planId: string) {
     setLoading(true);
     try {
-      const resp = (await checkout(planId)) as CheckoutResponse;
-      if (resp?.checkoutUrl && typeof resp.checkoutUrl === 'string') {
-        window.location.href = resp.checkoutUrl;
-        return;
-      }
-      alert('Checkout (simulado) — resposta: ' + JSON.stringify(resp));
-    } catch (err: unknown) {
-      alert('Erro no checkout: ' + getErrorMessage(err));
+      await checkoutSubscription(planId);
+      addToast({ type: 'success', message: 'Assinatura iniciada.' });
+    } catch (err: any) {
+      addToast({ type: 'error', message: err?.message || 'Erro ao criar assinatura.' });
     } finally {
       setLoading(false);
     }
   }
 
-  if (error) return <div className="p-8">Erro: {error}</div>;
-
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Planos</h1>
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-        {plans.map((p) => (
-          <PlanCard key={p.id} plan={p} onChoose={handleChoose} />
-        ))}
-      </div>
-      {loading && <div className="mt-4">Processando...</div>}
+    <div className="min-h-screen bg-[var(--background)] transition-colors">
+      <main className="app-container py-10">
+        <h1 className="mb-6 text-2xl font-semibold">Planos</h1>
+        {initialLoading && (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <Skeleton className="h-48" />
+            <Skeleton className="h-48" />
+          </div>
+        )}
+        {!initialLoading && (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {plans.length === 0 && <p className="text-sm text-zinc-600 dark:text-zinc-300">Sem planos disponíveis.</p>}
+            {plans.map((p) => (
+              <PlanCard
+                key={p.id}
+                plan={p}
+                current={p.id === currentPlanId}
+                onSelect={(id) => handleSubscribe(id)}
+                loading={loading}
+              />
+            ))}
+          </div>
+        )}
+      </main>
     </div>
   );
 }

@@ -1,38 +1,83 @@
-'use client';
-import React, { createContext, useEffect, useState } from 'react';
+"use client";
+import React, { createContext, useContext, useCallback, useState, useEffect } from "react";
+import { login as apiLogin, logout as apiLogout, getCurrentUser } from "../lib/api";
+import { clientLogoutCleanup } from "../lib/auth";
 
-export type AuthContextType = {
-  token: string | null;
-  login: (t: string) => void;
-  logout: () => void;
-};
+interface AuthContextValue {
+  user: any | null;
+  loading: boolean;
+  isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  refresh: () => Promise<void>;
+  error: string | null;
+}
 
-
-const DEFAULT_VALUE: AuthContextType = {
-  token: null,
-  login: () => {},
-  logout: () => {},
-};
-
-export const AuthContext = createContext<AuthContextType>(DEFAULT_VALUE);
+const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setToken] = useState<string | null>(() => {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('token');
-  });
+  const [user, setUser] = useState<any | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadUser = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getCurrentUser();
+      setUser(data);
+    } catch (err: any) {
+      setUser(null);
+      setError(err?.message || "Falha ao obter utilizador");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    if (token) localStorage.setItem('token', token);
-    else localStorage.removeItem('token');
-  }, [token]);
+    loadUser();
+  }, [loadUser]);
 
-  const login = (t: string) => setToken(t);
-  const logout = () => setToken(null);
+  const login = useCallback(async (email: string, password: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await apiLogin(email, password);
+      await loadUser();
+    } catch (err: any) {
+      setError(err?.message || "Falha no login");
+      setUser(null);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [loadUser]);
 
-  return (
-    <AuthContext.Provider value={{ token, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  const logout = useCallback(async () => {
+    try { await apiLogout(); } catch {}
+    clientLogoutCleanup();
+    setUser(null);
+  }, []);
+
+  const refresh = useCallback(async () => {
+    await loadUser();
+  }, [loadUser]);
+
+  const value: AuthContextValue = {
+    user,
+    loading,
+    isAuthenticated: !!user,
+    login,
+    logout,
+    refresh,
+    error,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuthContext() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuthContext deve ser usado dentro de AuthProvider");
+  return ctx;
 }

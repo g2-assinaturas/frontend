@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend Assinaturas – Documentação
 
-## Getting Started
+## Overview
+Aplicação Next.js (App Router) em React + TypeScript + Tailwind para fluxo de subscrições:
+- Registo multi-etapas (empresa, endereço, utilizador)
+- Autenticação via `AuthContext` (token em `localStorage` + cookies httpOnly futuros)
+- Listagem de planos e identificação do plano atual
+- Gestão de subscrição (estado, cancelamento ao fim do ciclo)
+- Checkout com polling para estado `PENDING` e redireciono ao `ACTIVE`
+- Faturas (lista + detalhe modal)
+- Tema claro/escuro, toasts globais, skeleton loaders
+- Suspense aplicado no checkout para `useSearchParams`
 
-First, run the development server:
+## Stack & Convenções
+- Next.js 16 / React 19
+- Tailwind CSS 4 + algumas variáveis (ex: background) para tema
+- Context: `AuthContext` em `contexts/` incluído via `Providers`
+- Hooks com cache em memória (variáveis módulo + `useState`) e inflight deduplicado
+- Polling exponencial apenas para subscrição `PENDING`
+- Código em Português (pt-BR/pt-PT misto) – manter consistência futura
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Estrutura
+```
+app/
+  login/ register/ plans/ dashboard/
+  subscription/ (manage/ checkout/ success/)
+  invoices/
+components/
+  subscription/ (PlanCard, SubscriptionStatus, InvoiceList, InvoiceDetailModal)
+  forms/ (MultiStepRegisterForm)
+  toast/ (ToastProvider)
+  Button, Card, Badge, Header, Skeleton, ThemeToggle
+contexts/ (AuthContext.tsx)
+hooks/ (useAuth, usePlans, useSubscription, useInvoices)
+lib/ (api.ts, auth.ts, format.ts, stripe.ts)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Endpoints Consumidos
+| Endpoint | Método | Uso | Request Body |
+|----------|--------|-----|--------------|
+| `/auth/login` | POST | Login | `{ emailOrCpf, password }` |
+| `/auth/register` | POST | Registo | `{ business, address, user }` |
+| `/auth/logout` | POST | Logout | - |
+| `/users/profile` | GET | Perfil atual | - |
+| `/plans` | GET | Planos | - |
+| `/subscriptions/checkout` | POST | Iniciar/alterar subscrição | `{ planId }` |
+| `/subscriptions/current` | GET | Subscrição atual | - |
+| `/subscriptions/invoices` | GET | Faturas | - |
+| `/subscriptions/cancel` | POST | Cancelamento ao fim do ciclo | - |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Fluxos
+### Registo
+MultiStepRegisterForm → `/auth/register` → feedback / navegação.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Login
+Validação email ou CPF (11 dígitos) → `/auth/login` → redireciono.
 
-## Learn More
+### Subscrição / Upgrade
+Seleção de plano → `/subscriptions/checkout` → polling `PENDING` → `ACTIVE` → `/subscription/success`.
 
-To learn more about Next.js, take a look at the following resources:
+### Cancelamento
+`/subscriptions/cancel` agenda cancelamento fim de período.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Faturas
+`useInvoices` obtém lista; modal mostra detalhe disponível.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Hooks
+| Hook | Função | Notas |
+|------|--------|-------|
+| `useAuth` | Perfil + logout + refresh | Cache global simples |
+| `usePlans` | Lista de planos | Cache até refresh |
+| `useSubscription` | Estado + polling | Backoff configurável |
+| `useInvoices` | Faturas | Cache array |
 
-## Deploy on Vercel
+## Polling `PENDING`
+Incrementa intervalo por `backoffFactor` até `maxIntervalMs`; cessa em estado final ou após `maxAttempts`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Componentes Principais
+| Componente | Propósito |
+|------------|-----------|
+| Button | Ações UI |
+| Card | Contêiner estilizado |
+| PlanCard | Exibir plano e acções |
+| SubscriptionStatus | Mostrar estado atual |
+| InvoiceList / InvoiceDetailModal | Lista + detalhes de faturas |
+| MultiStepRegisterForm | Registo multi-etapas |
+| Skeleton | Placeholder carregamento |
+| ToastProvider | Feedback global |
+| Header / ThemeToggle | Navegação + tema |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Arquitetura
+`Providers` empacota `ErrorBoundary`, `AuthProvider` e `ToastProvider` garantindo contexto de autenticação e toasts. Hooks usam padrão de cache em variáveis de módulo + promessa inflight para evitar chamadas duplicadas.
+
+## Variáveis de Ambiente
+| Nome | Descrição | Exemplo |
+|------|-----------|---------|
+| `NEXT_PUBLIC_API_URL` | Base da API | `http://localhost:3000` |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Chave pública Stripe (placeholder) | `pk_test_xxx` |
+
+## Scripts
+```bash
+npm run dev        # Desenvolvimento
+npm run build      # Build produção
+npm start          # Servir build
+npm run lint       # Lint
+npm test           # Jest (passa sem testes se vazio)
+npm run e2e        # Playwright
+```
+
+## Debug Rápido
+| Sintoma | Possível causa | Ação |
+|---------|----------------|------|
+| Failed to fetch | API offline / CORS | Ver backend / headers |
+| PENDING não muda | Falta processo backend | Conferir jobs / reduzir intervalo |
+| Sem toast | Falta `Providers` no layout | Incluir `Providers` |
+| Dark mode não aplica | Classe `dark` ausente | Ver `ThemeToggle` |
+
+## Segurança (Foco Frontend)
+- Token atualmente em `localStorage` (migrar para cookies httpOnly conforme backend)
+- Sem lógica sensível de faturação no cliente
+
+## Próximos Passos / Roadmap
+- Interfaces TypeScript para User/Plan/Subscription/Invoice
+- Webhooks / SSE para substituir polling
+- Testes adicionais (unit + e2e fluxos principais)
+- i18n e padronização pt-BR vs pt-PT
+
+---
+README alinhado ao estado atual do código. Atualizar se arquitetura ou endpoints mudarem.
