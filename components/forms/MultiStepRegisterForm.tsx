@@ -40,11 +40,15 @@ export default function MultiStepRegisterForm({ onSuccess }: { onSuccess?: () =>
     if (step === 'business') {
       if (!data.business.name) e.businessName = 'Nome da empresa é obrigatório';
       if (!data.business.email || !/^[^@]+@[^@]+\.[^@]+$/.test(data.business.email)) e.businessEmail = 'Email inválido';
+      if (!data.business.phone) e.businessPhone = 'Telefone é obrigatório';
+      else if (!/^(\+\d{1,3})?\d{10,11}$/.test(data.business.phone)) e.businessPhone = 'Formato inválido (10-11 dígitos)';
     } else if (step === 'address') {
       if (!data.address.street) e.addressStreet = 'Rua obrigatória';
       if (!data.address.city) e.addressCity = 'Cidade obrigatória';
       if (!data.address.state) e.addressState = 'Estado obrigatório';
+      else if (data.address.state.length !== 2) e.addressState = 'Estado deve ter 2 letras (ex: SP)';
       if (!data.address.zipCode) e.addressZip = 'CEP obrigatório';
+      else if (!/^\d{8}$/.test(data.address.zipCode)) e.addressZip = 'CEP deve ter 8 dígitos';
     } else if (step === 'user') {
       if (!data.user.name) e.userName = 'Nome obrigatório';
       if (!data.user.email || !/^[^@]+@[^@]+\.[^@]+$/.test(data.user.email)) e.userEmail = 'Email inválido';
@@ -86,7 +90,13 @@ export default function MultiStepRegisterForm({ onSuccess }: { onSuccess?: () =>
           {errors.businessName && <Error msg={errors.businessName} />}
           <Input label="Email da Empresa" value={data.business.email} onChange={(e) => update({ business: { ...data.business, email: e.target.value } })} />
           {errors.businessEmail && <Error msg={errors.businessEmail} />}
-          <Input label="Telefone" value={data.business.phone || ''} onChange={(e) => update({ business: { ...data.business, phone: e.target.value } })} />
+          <Input 
+            label="Telefone (ex: 11987654321)" 
+            value={data.business.phone || ''} 
+            onChange={(e) => update({ business: { ...data.business, phone: e.target.value.replace(/\D/g, '') } })} 
+            placeholder="11987654321"
+          />
+          {errors.businessPhone && <Error msg={errors.businessPhone} />}
           <Input label="Descrição" value={data.business.description || ''} onChange={(e) => update({ business: { ...data.business, description: e.target.value } })} />
         </div>
       )}
@@ -100,9 +110,19 @@ export default function MultiStepRegisterForm({ onSuccess }: { onSuccess?: () =>
           <Input label="Bairro" value={data.address.neighborhood} onChange={(e) => update({ address: { ...data.address, neighborhood: e.target.value } })} />
           <Input label="Cidade" value={data.address.city} onChange={(e) => update({ address: { ...data.address, city: e.target.value } })} />
           {errors.addressCity && <Error msg={errors.addressCity} />}
-          <Input label="Estado" value={data.address.state} onChange={(e) => update({ address: { ...data.address, state: e.target.value } })} />
+          <Input 
+            label="Estado (2 letras)" 
+            value={data.address.state} 
+            onChange={(e) => update({ address: { ...data.address, state: e.target.value.toUpperCase().slice(0, 2) } })} 
+            placeholder="SP"
+          />
           {errors.addressState && <Error msg={errors.addressState} />}
-          <Input label="CEP" value={data.address.zipCode} onChange={(e) => update({ address: { ...data.address, zipCode: e.target.value } })} />
+          <Input 
+            label="CEP (8 dígitos)" 
+            value={data.address.zipCode} 
+            onChange={(e) => update({ address: { ...data.address, zipCode: e.target.value.replace(/\D/g, '').slice(0, 8) } })} 
+            placeholder="01234567"
+          />
           {errors.addressZip && <Error msg={errors.addressZip} />}
           <Input label="Complemento" value={data.address.complement || ''} onChange={(e) => update({ address: { ...data.address, complement: e.target.value } })} />
         </div>
@@ -113,7 +133,12 @@ export default function MultiStepRegisterForm({ onSuccess }: { onSuccess?: () =>
           {errors.userName && <Error msg={errors.userName} />}
           <Input label="Email do Usuário" value={data.user.email} onChange={(e) => update({ user: { ...data.user, email: e.target.value } })} />
           {errors.userEmail && <Error msg={errors.userEmail} />}
-          <Input label="CPF" value={data.user.cpf} onChange={(e) => update({ user: { ...data.user, cpf: e.target.value } })} />
+          <Input 
+            label="CPF (11 dígitos)" 
+            value={data.user.cpf} 
+            onChange={(e) => update({ user: { ...data.user, cpf: e.target.value.replace(/\D/g, '').slice(0, 11) } })} 
+            placeholder="12345678901"
+          />
           {errors.userCpf && <Error msg={errors.userCpf} />}
           <Input label="Password" type="password" value={data.user.password} onChange={(e) => update({ user: { ...data.user, password: e.target.value } })} />
           {errors.userPassword && <Error msg={errors.userPassword} />}

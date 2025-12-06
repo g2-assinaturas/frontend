@@ -20,15 +20,20 @@ export default function ManageSubscriptionPage() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [upgradeLoadingId, setUpgradeLoadingId] = useState<string | null>(null);
   const [upgradeError, setUpgradeError] = useState<string | null>(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const { addToast } = useToast();
 
-  async function handleCancel() {
+  async function handleCancel(cancelAtPeriodEnd: boolean) {
     setActionError(null); setSuccessMsg(null);
     setActionLoading(true);
+    setShowCancelModal(false);
     try {
-      await cancelSubscription();
-      setSuccessMsg('Cancelamento agendado no fim do período.');
-      addToast({ type: 'success', message: 'Cancelamento agendado.' });
+      await cancelSubscription(cancelAtPeriodEnd);
+      const msg = cancelAtPeriodEnd 
+        ? 'Cancelamento agendado no fim do período.' 
+        : 'Subscrição cancelada imediatamente.';
+      setSuccessMsg(msg);
+      addToast({ type: 'success', message: msg });
       await refresh();
     } catch (err: any) {
       const msg = err?.message || 'Falha ao cancelar';
@@ -65,11 +70,11 @@ export default function ManageSubscriptionPage() {
                 <div className="flex gap-2 flex-wrap">
                   <Button
                     variant="danger"
-                    onClick={handleCancel}
+                    onClick={() => setShowCancelModal(true)}
                     disabled={actionLoading || subscription.cancelAtPeriodEnd}
-                    aria-label="Cancelar subscrição no fim do período"
+                    aria-label="Cancelar subscrição"
                   >
-                    {subscription.cancelAtPeriodEnd ? 'Cancelamento Agendado' : actionLoading ? 'A cancelar...' : 'Cancelar ao fim do período'}
+                    {subscription.cancelAtPeriodEnd ? 'Cancelamento Agendado' : 'Cancelar Subscrição'}
                   </Button>
                   <Button
                     variant="outline"
@@ -123,6 +128,67 @@ export default function ManageSubscriptionPage() {
           )}
           {error && <p className="mt-4 text-xs text-red-600 dark:text-red-400" role="alert">{error}</p>}
         </section>
+
+        {/* Modal de Confirmação de Cancelamento */}
+        {showCancelModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <Card className="max-w-md w-full">
+              <h3 className="text-lg font-semibold text-zinc-800 dark:text-zinc-100 mb-4">
+                Como deseja cancelar?
+              </h3>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
+                Escolha quando o cancelamento deve entrar em vigor:
+              </p>
+              
+              <div className="space-y-3 mb-6">
+                <div className="p-4 border-2 border-zinc-200 dark:border-zinc-700 rounded-lg">
+                  <h4 className="font-medium text-zinc-800 dark:text-zinc-100 mb-1">
+                    Cancelar no fim do período
+                  </h4>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                    Você continuará tendo acesso até {subscription?.currentPeriodEnd ? new Date(subscription.currentPeriodEnd).toLocaleDateString('pt-BR') : 'o fim do período atual'}
+                  </p>
+                </div>
+                
+                <div className="p-4 border-2 border-red-200 dark:border-red-800 rounded-lg bg-red-50 dark:bg-red-900/10">
+                  <h4 className="font-medium text-red-800 dark:text-red-300 mb-1">
+                    Cancelar imediatamente
+                  </h4>
+                  <p className="text-xs text-red-600 dark:text-red-400">
+                    Seu acesso será revogado agora. Sem reembolso.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowCancelModal(false)}
+                  disabled={actionLoading}
+                  className="flex-1"
+                >
+                  Voltar
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => handleCancel(true)}
+                  disabled={actionLoading}
+                  className="flex-1"
+                >
+                  {actionLoading ? '...' : 'Fim do Período'}
+                </Button>
+                <Button
+                  variant="danger"
+                  onClick={() => handleCancel(false)}
+                  disabled={actionLoading}
+                  className="flex-1"
+                >
+                  {actionLoading ? '...' : 'Agora'}
+                </Button>
+              </div>
+            </Card>
+          </div>
+        )}
       </main>
     </div>
   );
