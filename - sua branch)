@@ -1,0 +1,142 @@
+[1mdiff --cc app/page.tsx[m
+[1mindex d18c9e7,f72bfd8..0000000[m
+[1m--- a/app/page.tsx[m
+[1m+++ b/app/page.tsx[m
+[36m@@@ -1,51 -1,88 +1,137 @@@[m
+  import Link from 'next/link';[m
+[32m +import Button from '../components/Button';[m
+  import Card from '../components/Card';[m
+  [m
+[32m++<<<<<<< Updated upstream[m
+[32m +export default function Home() {[m
+[32m +  return ([m
+[32m +    <div className="min-h-screen bg-[var(--background)] transition-colors">[m
+[32m +      <main className="app-container py-20 flex flex-col gap-12">[m
+[32m +        <section className="flex flex-col gap-6 max-w-3xl">[m
+[32m +          <h1 className="text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">[m
+[32m +            <span className="accent-gradient-text">Sistema de Assinaturas</span> Grupo 2[m
+[32m +          </h1>[m
+[32m +          <p className="text-lg text-zinc-600 dark:text-zinc-300 max-w-xl">[m
+[32m +            Plataforma prática para gestão de planos, subscrições e faturação. Experimente criar uma conta ou explorar os planos disponíveis.[m
+[32m +          </p>[m
+[32m +          <div className="flex flex-wrap gap-3">[m
+[32m +            <Link href="/plans"><Button>Ver Planos</Button></Link>[m
+[32m +            <Link href="/register"><Button className="bg-zinc-200 text-zinc-800 hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-600">Criar Conta</Button></Link>[m
+[32m +            <Link href="/login"><Button className="bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700">Entrar</Button></Link>[m
+[32m +          </div>[m
+[32m +        </section>[m
+[32m +        <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">[m
+[32m +          <Card className="space-y-2">[m
+[32m +            <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">Planos Flexíveis</h3>[m
+[32m +            <p className="text-xs text-zinc-600 dark:text-zinc-300">Mensal, semestral ou anual para adaptar seu crescimento.</p>[m
+[32m +          </Card>[m
+[32m +          <Card className="space-y-2">[m
+[32m +            <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">Status em Tempo Real</h3>[m
+[32m +            <p className="text-xs text-zinc-600 dark:text-zinc-300">Acompanhe ativação, cancelamento e ciclo de faturação.</p>[m
+[32m +          </Card>[m
+[32m +          <Card className="space-y-2">[m
+[32m +            <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">Faturas Centralizadas</h3>[m
+[32m +            <p className="text-xs text-zinc-600 dark:text-zinc-300">Histórico de cobranças acessível e pronto para auditoria.</p>[m
+[32m +          </Card>[m
+[32m +          <Card className="space-y-2">[m
+[32m +            <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">Gestão Simples</h3>[m
+[32m +            <p className="text-xs text-zinc-600 dark:text-zinc-300">Cancelamento seguro no fim do período e upgrades.</p>[m
+[32m +          </Card>[m
+[32m +          <Card className="space-y-2">[m
+[32m +            <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">Dark Mode</h3>[m
+[32m +            <p className="text-xs text-zinc-600 dark:text-zinc-300">Interface otimizada para baixa luminosidade.</p>[m
+[32m +          </Card>[m
+[32m +          <Card className="space-y-2">[m
+[32m +            <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">Extensível</h3>[m
+[32m +            <p className="text-xs text-zinc-600 dark:text-zinc-300">Preparado para integrações e webhooks Stripe.</p>[m
+[32m +          </Card>[m
+[32m +        </section>[m
+[32m +      </main>[m
+[32m +    </div>[m
+[32m++=======[m
+[32m+ /**[m
+[32m+  * Home: Landing page com hero section e features grid[m
+[32m+  */[m
+[32m+ export default function Home() {[m
+[32m+   // Features data array[m
+[32m+   const features = [[m
+[32m+     {[m
+[32m+       id: 'plans',[m
+[32m+       title: 'Planos Flexíveis',[m
+[32m+       description: 'Mensal, semestral ou anual para adaptar seu crescimento.',[m
+[32m+     },[m
+[32m+     {[m
+[32m+       id: 'status',[m
+[32m+       title: 'Status em Tempo Real',[m
+[32m+       description: 'Acompanhe ativação, cancelamento e ciclo de faturação.',[m
+[32m+     },[m
+[32m+     {[m
+[32m+       id: 'invoices',[m
+[32m+       title: 'Faturas Centralizadas',[m
+[32m+       description: 'Histórico de cobranças acessível e pronto para auditoria.',[m
+[32m+     },[m
+[32m+     {[m
+[32m+       id: 'management',[m
+[32m+       title: 'Gestão Simples',[m
+[32m+       description: 'Cancelamento seguro no fim do período e upgrades.',[m
+[32m+     },[m
+[32m+     {[m
+[32m+       id: 'darkmode',[m
+[32m+       title: 'Dark Mode',[m
+[32m+       description: 'Interface otimizada para baixa luminosidade.',[m
+[32m+     },[m
+[32m+     {[m
+[32m+       id: 'integration',[m
+[32m+       title: 'Extensível',[m
+[32m+       description: 'Preparado para integrações e webhooks Stripe.',[m
+[32m+     },[m
+[32m+   ];[m
+[32m+ [m
+[32m+   return ([m
+[32m+     <main className="min-h-screen bg-[var(--background)] transition-colors">[m
+[32m+       <section className="w-full py-20 sm:py-32 lg:py-40 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-blue-50/50 to-indigo-50/30 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800">[m
+[32m+         <div className="app-container max-w-4xl mx-auto text-center space-y-8">[m
+[32m+           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight tracking-tight">[m
+[32m+             <span className="accent-gradient-text">Sistema de Assinaturas</span>[m
+[32m+             <br />[m
+[32m+             <span className="text-zinc-900 dark:text-zinc-50">Grupo 2</span>[m
+[32m+           </h1>[m
+[32m+ [m
+[32m+           <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-300 max-w-2xl mx-auto leading-relaxed">[m
+[32m+             Plataforma prática para gestão de planos, subscrições e faturação. Explore recursos poderosos para sua empresa.[m
+[32m+           </p>[m
+[32m+         </div>[m
+[32m+       </section>[m
+[32m+ [m
+[32m+       <section className="w-full py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 bg-[var(--background)]">[m
+[32m+         <div className="app-container">[m
+[32m+           <div className="mb-16 text-center">[m
+[32m+             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-zinc-900 dark:text-zinc-50 mb-4">[m
+[32m+               Recursos Principais[m
+[32m+             </h2>[m
+[32m+             <p className="text-base sm:text-lg text-zinc-600 dark:text-zinc-400">[m
+[32m+               Tudo que você precisa para gerenciar assinaturas de forma profissional.[m
+[32m+             </p>[m
+[32m+           </div>[m
+[32m+ [m
+[32m+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">[m
+[32m+             {features.map((feature) => ([m
+[32m+               <Card[m
+[32m+                 key={feature.id}[m
+[32m+                 className="space-y-3"[m
+[32m+               >[m
+[32m+                 <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">[m
+[32m+                   {feature.title}[m
+[32m+                 </h3>[m
+[32m+                 <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">[m
+[32m+                   {feature.description}[m
+[32m+                 </p>[m
+[32m+               </Card>[m
+[32m+             ))}[m
+[32m+           </div>[m
+[32m+         </div>[m
+[32m+       </section>[m
+[32m+     </main>[m
+[32m++>>>>>>> Stashed changes[m
+    );[m
+  }[m
