@@ -1,7 +1,6 @@
 const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 export const API_URL = rawApiUrl.replace(/\/+$/, '');
 
-
 function getAccessToken(): string | null {
   if (typeof window === 'undefined') return null;
   return localStorage.getItem('token');
@@ -29,7 +28,6 @@ export async function apiFetch(path: string, opts: ApiOptions = {}) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  
   const fetchOpts: RequestInit = {
     ...opts,
     headers,
@@ -40,14 +38,12 @@ export async function apiFetch(path: string, opts: ApiOptions = {}) {
   try {
     res = await fetch(url, fetchOpts);
   } catch (err: any) {
-    
     const netErr = new Error(`Network request failed for ${url}: ${err?.message || 'Failed to fetch'}`);
     (netErr as any).cause = err;
     throw netErr;
   }
 
   if (res.status === 401) {
-    
     if (typeof window !== 'undefined') localStorage.removeItem('token');
     throw new Error('Unauthorized');
   }
@@ -162,11 +158,9 @@ export async function cancelSubscription(cancelAtPeriodEnd: boolean = true) {
 }
 
 export async function logout() {
-  
   try {
     return apiFetch('/auth/logout', { method: 'POST' });
   } catch (err) {
-    
     return null;
   }
 }
@@ -249,7 +243,6 @@ export async function logoutSuperAdmin() {
   return { success: true };
 }
 
-// Company Management
 export interface CreateCompanyDto {
   name: string;
   email: string;

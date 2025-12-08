@@ -14,11 +14,6 @@ export interface PlanDto {
   active?: boolean;
 }
 
-
-export function formatPrice(cents: number, currency: string = 'BRL') {
-  return formatMoney(cents, currency);
-}
-
 export default function PlanCard({ plan, current, onSelect, loading }: {
   plan: PlanDto;
   current?: boolean;

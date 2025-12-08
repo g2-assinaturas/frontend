@@ -33,21 +33,22 @@ export default function SuperAdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 dark:from-zinc-900 dark:via-purple-950 dark:to-indigo-950 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-2xl mb-4">
-            <span className="text-white font-bold text-2xl">SA</span>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 dark:from-zinc-900 dark:via-purple-950 dark:to-indigo-950">
+      <div className="w-full max-w-md">
+        <Card className="shadow-xl">
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-2xl mb-4">
+              <span className="text-white font-bold text-2xl">SA</span>
+            </div>
+            <h1 className="text-2xl font-bold text-zinc-800 dark:text-zinc-100">
+              Super Admin
+            </h1>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+              Painel de Gestão do Sistema
+            </p>
           </div>
-          <h1 className="text-2xl font-bold text-zinc-800 dark:text-zinc-100">
-            Super Admin
-          </h1>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
-            Painel de Gestão do Sistema
-          </p>
-        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             label="Email"
             type="email"
@@ -84,7 +85,8 @@ export default function SuperAdminLoginPage() {
             Acesso restrito a administradores do sistema
           </p>
         </div>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }

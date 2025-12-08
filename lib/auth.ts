@@ -1,4 +1,3 @@
-
 export function clearClientAuth() {
   try {
     if (typeof window !== 'undefined') {

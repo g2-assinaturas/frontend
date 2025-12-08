@@ -13,8 +13,7 @@ export default class ErrorBoundary extends React.Component<{ children: React.Rea
   }
 
   componentDidCatch(error: Error, info: any) {
-    
-    console.error('ErrorBoundary caught error', error, info);
+    // Error captured and displayed in render
   }
 
   handleReset = () => {

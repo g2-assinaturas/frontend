@@ -2,11 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --accent: #6366f1; /* indigo-500 */
+  --accent: #6366f1;
   --accent-hover: #4f46e5;
   --accent-ring: #818cf8;
   --surface: #f8fafc;
@@ -29,7 +28,6 @@
   }
 }
 
-/* Explicit dark mode (class) override to support manual toggle */
 .dark {
   --background: #0a0a0a;
   --foreground: #ededed;
@@ -40,17 +38,32 @@
   --accent-ring: #6366f1;
 }
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Utility classes */
 .accent-gradient-text {
   background: var(--gradient);
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
 }
 
@@ -67,14 +80,17 @@ body {
   padding-right: 1.5rem;
 }
 
-.ring-focus-base:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--accent-ring);
-}
-
 @keyframes subtle-fade-in {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { 
+    opacity: 0; 
+    transform: translateY(4px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
 }
 
-.fade-in { animation: subtle-fade-in .35s ease; }
+.fade-in { 
+  animation: subtle-fade-in 0.35s ease; 
+}

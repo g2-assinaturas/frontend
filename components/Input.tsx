@@ -18,19 +18,19 @@ export default function Input({
   placeholder?: string;
   className?: string;
 }) {
-
   const normalized = value ?? '';
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-   
-    if (process.env.NODE_ENV !== 'production') {
-    
-      console.log('[Input change]', label, e.target.value);
-    }
     onChange?.(e);
   }
+
   return (
     <label className="block w-full">
-      {label && <div className="mb-1 text-sm font-medium text-zinc-700 dark:text-zinc-200">{label}</div>}
+      {label && (
+        <div className="mb-1 text-sm font-medium text-zinc-700 dark:text-zinc-200">
+          {label}
+        </div>
+      )}
       <input
         type={type}
         value={normalized}
@@ -39,10 +39,8 @@ export default function Input({
         placeholder={placeholder}
         name={label ? label.toLowerCase().replace(/[^a-z0-9]+/g, '_') : undefined}
         autoComplete="off"
-        className={
-          'w-full rounded-md border border-[var(--border)] bg-white text-zinc-900 px-3 py-2 text-sm placeholder:text-zinc-400 focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-ring)] caret-[var(--accent)] dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 transition-colors ' +
-          className
-        }
+        className={`w-full max-w-md rounded-none border border-[var(--border)] bg-white text-zinc-900 px-3 py-2 text-sm placeholder:text-zinc-400 focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-ring)] caret-[var(--accent)] dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 transition-colors ${className}`}
+        style={{ borderRadius: '0px', boxShadow: '0 0 0 1px var(--border), 0 1px 2px rgba(15,23,42,0.05)' }}
       />
     </label>
   );

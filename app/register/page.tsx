@@ -1,15 +1,16 @@
 "use client";
-import React from 'react';
-import { useRouter } from 'next/navigation';
+
 import MultiStepRegisterForm from '../../components/forms/MultiStepRegisterForm';
+import { useRouter } from 'next/navigation';
 
 export default function RegisterPage() {
   const router = useRouter();
+
   return (
-    <div className="min-h-screen bg-[var(--background)] transition-colors">
-      <main className="app-container flex flex-col items-center gap-8 py-16">
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center p-4">
+      <div className=" max-w-md">
         <MultiStepRegisterForm onSuccess={() => router.push('/login')} />
-      </main>
+      </div>
     </div>
   );
 }

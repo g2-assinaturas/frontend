@@ -7,8 +7,8 @@ export default function ThemeToggle() {
 
   useEffect(() => {
     setMounted(true);
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('theme') : null;
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const saved = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const useDark = saved ? saved === 'dark' : prefersDark;
     setDark(useDark);
     document.documentElement.classList.toggle('dark', useDark);
@@ -27,7 +27,7 @@ export default function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label="Alternar tema"
-      className="inline-flex items-center gap-1 rounded-md border bg-[var(--surface)] px-3 py-1.5 text-xs font-medium shadow-sm transition-colors
+      className="inline-flex items-center gap-1 rounded-md border bg-[var(--surface)] px-3 py-2.5 text-xs font-medium shadow-sm transition-colors
                  border-[var(--border)] text-[var(--foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)]
                  dark:bg-[var(--surface)] dark:text-[var(--foreground)] dark:border-zinc-600 dark:hover:border-[var(--accent)]
                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)]"
