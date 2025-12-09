@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { useInvoices } from '../../hooks/useInvoices';
 import InvoiceList, { InvoiceDto } from '../../components/subscription/InvoiceList';
 import InvoiceDetailModal from '../../components/subscription/InvoiceDetailModal';
-import Card from '../../components/Card';
 import Button from '../../components/Button';
 import Skeleton from '../../components/Skeleton';
 import { useToast } from '../../components/toast/ToastProvider';

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getPlans } from '../lib/api';
 
 let cachedPlans: any[] | null = null;

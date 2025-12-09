@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 export const API_URL = rawApiUrl.replace(/\/+$/, '');
 
@@ -160,7 +162,7 @@ export async function cancelSubscription(cancelAtPeriodEnd: boolean = true) {
 export async function logout() {
   try {
     return apiFetch('/auth/logout', { method: 'POST' });
-  } catch (err) {
+  } catch {
     return null;
   }
 }

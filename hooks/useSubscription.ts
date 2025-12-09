@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState, useCallback, useRef } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { getCurrentSubscription } from '../lib/api';
 
 let cachedSubscription: any = undefined;
@@ -20,7 +21,7 @@ export function useSubscription(options: Options = { auto: true }) {
   const backoffFactor = options.backoffFactor ?? 1.5;
   const maxIntervalMs = options.maxIntervalMs ?? 30000;
   const maxAttempts = options.maxAttempts ?? 12; 
-  const pollUntilStatuses = options.pollUntilStatuses ?? ['ACTIVE','CANCELED','INACTIVE','EXPIRED'];
+  const pollUntilStatuses = useMemo(() => options.pollUntilStatuses ?? ['ACTIVE','CANCELED','INACTIVE','EXPIRED'], [options.pollUntilStatuses]);
   const [subscription, setSubscription] = useState<any>(cachedSubscription);
   const [loading, setLoading] = useState<boolean>(!!(auto && !cachedSubscription));
   const [error, setError] = useState<string | null>(null);

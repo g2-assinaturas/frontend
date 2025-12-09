@@ -1,7 +1,6 @@
-// @ts-nocheck
 import { defineConfig } from '@playwright/test';
 
-export default defineConfig({
+const config = defineConfig({
   testDir: './e2e',
   timeout: 30000,
   use: {
@@ -10,3 +9,4 @@ export default defineConfig({
   },
   reporter: [['list'], ['html', { open: 'never' }]],
 });
+export default config;

@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { createContext, useContext, useCallback, useState, useEffect } from "react";
 import { login as apiLogin, logout as apiLogout, getCurrentUser } from "../lib/api";
 import { clientLogoutCleanup } from "../lib/auth";

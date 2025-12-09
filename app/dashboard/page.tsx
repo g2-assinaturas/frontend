@@ -1,11 +1,11 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
 import SubscriptionStatus from '../../components/subscription/SubscriptionStatus';
 import InvoiceList from '../../components/subscription/InvoiceList';
 import Skeleton from '../../components/Skeleton';
 import { useToast } from '../../components/toast/ToastProvider';
-import { getCurrentSubscription, getInvoices, logout } from '../../lib/api';
-import { clientLogoutCleanup } from '../../lib/auth';
+import { getCurrentSubscription, getInvoices } from '../../lib/api';
 
 type Subscription = {
   id: string;
@@ -26,6 +26,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let mounted = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     Promise.all([getCurrentSubscription(), getInvoices()])
       .then(([subRes, invRes]: any) => {
@@ -36,12 +37,7 @@ export default function DashboardPage() {
       .catch((err) => { console.error(err); addToast({ type: 'error', message: 'Falha ao carregar dados.' }); })
       .finally(() => setLoading(false));
     return () => { mounted = false; };
-  }, []);
-
-  function fmtDate(d?: string) {
-    if (!d) return '-';
-    try { return new Date(d).toLocaleString(); } catch { return d; }
-  }
+  }, [addToast]);
 
   return (
     <div className="min-h-screen bg-[var(--background)] transition-colors">

@@ -3,6 +3,7 @@ import React from 'react';
 
 export default function Input({
   label,
+  labelIcon,
   type = 'text',
   value,
   onChange,
@@ -10,7 +11,8 @@ export default function Input({
   placeholder,
   className = '',
 }: {
-  label?: string;
+  label?: React.ReactNode;
+  labelIcon?: React.ReactNode;
   type?: string;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -19,6 +21,7 @@ export default function Input({
   className?: string;
 }) {
   const normalized = value ?? '';
+  const labelText = typeof label === 'string' ? label : undefined;
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     onChange?.(e);
@@ -27,8 +30,16 @@ export default function Input({
   return (
     <label className="block w-full">
       {label && (
-        <div className="mb-1 text-sm font-medium text-zinc-700 dark:text-zinc-200">
-          {label}
+        <div
+          className="mb-1 flex items-center text-sm font-medium text-zinc-700 dark:text-zinc-200"
+          style={{ columnGap: '0.75rem', paddingLeft: '0.75rem' }}
+        >
+          {labelIcon && (
+            <span className="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center text-zinc-600 dark:text-zinc-300">
+              {labelIcon}
+            </span>
+          )}
+          <span className="leading-tight">{label}</span>
         </div>
       )}
       <input
@@ -37,7 +48,7 @@ export default function Input({
         onChange={handleChange}
         onBlur={onBlur}
         placeholder={placeholder}
-        name={label ? label.toLowerCase().replace(/[^a-z0-9]+/g, '_') : undefined}
+        name={labelText ? labelText.toLowerCase().replace(/[^a-z0-9]+/g, '_') : undefined}
         autoComplete="off"
         className={`w-full max-w-md rounded-none border border-[var(--border)] bg-white text-zinc-900 px-3 py-2 text-sm placeholder:text-zinc-400 focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-ring)] caret-[var(--accent)] dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 transition-colors ${className}`}
         style={{ borderRadius: '0px', boxShadow: '0 0 0 1px var(--border), 0 1px 2px rgba(15,23,42,0.05)' }}

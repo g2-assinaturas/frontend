@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 async function apiFetch<T = any>(path: string, options: RequestInit = {}): Promise<T> {
@@ -43,7 +44,7 @@ export type CheckoutResponse = {
 export async function getPlans(): Promise<Plan[]> {
   try {
     return await apiFetch<Plan[]>('/subscriptions/plans');
-  } catch (err) {
+  } catch {
     // fallback temporário para desenvolvimento local
     return [
       { id: 'monthly', name: 'Mensal', description: 'Acesso básico mensal', price: 1999, currency: 'BRL', interval: 'MONTHLY' },

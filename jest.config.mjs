@@ -1,4 +1,4 @@
-export default {
+const config = {
   testEnvironment: 'jsdom',
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
@@ -11,3 +11,5 @@ export default {
     '^@/(.*)$': '<rootDir>/$1'
   }
 };
+
+export default config;

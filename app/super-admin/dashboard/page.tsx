@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import SuperAdminLayout from '../../../components/super-admin/SuperAdminLayout';
 import Card from '../../../components/Card';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Badge } from '../../../components/Badge';
 import { useSuperAdminAuth } from '../../../hooks/useSuperAdminAuth';
 import { useCompanies } from '../../../hooks/useCompanies';

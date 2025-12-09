@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import Card from './Card';
 import Button from './Button';
@@ -12,7 +13,7 @@ export default class ErrorBoundary extends React.Component<{ children: React.Rea
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, info: any) {
+  componentDidCatch(): void {
     // Error captured and displayed in render
   }
 

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Badge } from '../Badge';
 import { toggleCompanyStatus, deleteCompany } from '../../lib/api';
 import { useToast } from '../toast/ToastProvider';

@@ -1,40 +1,14 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
 import { getPlans, checkoutSubscription, getCurrentSubscription } from '../../lib/api';
 import Skeleton from '../../components/Skeleton';
 import { useToast } from '../../components/toast/ToastProvider';
-import PlanCard, { PlanDto } from '../../components/subscription/PlanCard';
+import PlanCard from '../../components/subscription/PlanCard';
 
 /**
  * Planos fictícios para fallback
  */
-const DEMO_PLANS: PlanDto[] = [
-  {
-    id: 'demo-basic',
-    name: 'Básico',
-    price: 4900, // R$ 49
-    currency: 'BRL',
-    interval: 'month',
-    description: '1 instância WhatsApp\n500 mensagens/dia\nSuporte por email',
-  },
-  {
-    id: 'demo-pro',
-    name: 'Pro',
-    price: 9900, // R$ 99
-    currency: 'BRL',
-    interval: 'month',
-    description: '5 instâncias\n5000 mensagens/dia\nSuporte prioritário\nRelatórios avançados',
-  },
-  {
-    id: 'demo-enterprise',
-    name: 'Enterprise',
-    price: 29900, // R$ 299
-    currency: 'BRL',
-    interval: 'month',
-    description: 'Instâncias ilimitadas\nMensagens ilimitadas\nSuporte 24/7\nAPI dedicada',
-  },
-];
-
 type Plan = { id: string; name: string; price: number; currency?: string; description?: string; interval?: string };
 
 export default function PlansPage() {
@@ -55,7 +29,7 @@ export default function PlansPage() {
       .catch((err) => { console.error(err); addToast({ type: 'error', message: 'Falha ao carregar planos.' }); })
       .finally(() => setInitialLoading(false));
     return () => { mounted = false; };
-  }, []);
+  }, [addToast]);
 
   async function handleSubscribe(planId: string) {
     setLoading(true);

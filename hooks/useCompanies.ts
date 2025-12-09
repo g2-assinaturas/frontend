@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { listCompanies } from '../lib/api';
 
 let cachedCompanies: any[] | null = null;

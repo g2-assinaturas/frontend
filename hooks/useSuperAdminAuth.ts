@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSuperAdminProfile, logoutSuperAdmin } from '../lib/api';
 
 let cachedSuperAdmin: any = undefined;

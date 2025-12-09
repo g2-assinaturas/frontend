@@ -149,6 +149,7 @@ export default function LoginPage() {
             )}
             <div className="pl-6" style={{ paddingLeft: '1.5rem', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}>
               <Button
+                variant="solid"
                 type="submit"
                 disabled={loading || !!emailError || !!passwordError || !email || !password}
                 aria-busy={loading}
