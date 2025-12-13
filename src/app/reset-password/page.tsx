@@ -1,13 +1,13 @@
 'use client';
 
-import { FormEvent, useState, useEffect } from 'react';
+import { FormEvent, useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Toast } from '@/components/toast';
 import { resetPassword } from '@/lib/api';
 import { ResetPasswordSchema } from '@/lib/validators';
 
-export default function ResetPasswordPage() {
+function ResetPasswordPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
@@ -28,7 +28,7 @@ export default function ResetPasswordPage() {
     const result = ResetPasswordSchema.safeParse({ newPassword, confirmNewPassword });
     if (!result.success) {
       const fieldErrors: typeof errors = {};
-      result.error.errors.forEach((err) => {
+      result.error.issues.forEach((err) => {
         const field = err.path[0] as keyof typeof errors;
         fieldErrors[field] = err.message;
       });
@@ -137,5 +137,13 @@ export default function ResetPasswordPage() {
 
       {toast ? <Toast message={toast.message} kind={toast.kind} onClose={() => setToast(null)} /> : null}
     </main>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordPage />
+    </Suspense>
   );
 }
