@@ -142,9 +142,30 @@ export async function superAdminProfile(token: string): Promise<{ user: SuperAdm
 }
 
 export async function listCompanies(token: string): Promise<CompanySummary[]> {
-  return apiFetch<CompanySummary[]>('/super-admin/companies', withAuth(token, { cache: 'no-store' }));
+  const response = await apiFetch<{ success: boolean; data: CompanySummary[] }>('/super-admin/companies', withAuth(token, { cache: 'no-store' }));
+  return response.data;
 }
 
 export async function toggleCompanyStatus(id: string, token: string) {
   return apiFetch<{ message: string }>(`/super-admin/companies/${id}/toggle-status`, withAuth(token, { method: 'PATCH' }));
+}
+
+export async function forgotPassword(email: string): Promise<{ message: string; token?: string }> {
+  return apiFetch<{ message: string; token?: string }>('/company-auth/forgot-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+}
+
+export async function resetPassword(
+  token: string,
+  newPassword: string,
+  confirmNewPassword: string,
+): Promise<{ message: string; requiresReauth: boolean }> {
+  return apiFetch<{ message: string; requiresReauth: boolean }>('/company-auth/reset-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, newPassword, confirmNewPassword }),
+  });
 }
