@@ -25,10 +25,10 @@ const STATUS_COLORS: Record<InvoiceStatus, string> = {
   REFUNDED: 'bg-purple-100 text-purple-700',
 };
 
-function formatCurrency(value: number, currency: string = 'EUR'): string {
+function formatCurrency(value: number, currency?: string): string {
   return new Intl.NumberFormat('pt-PT', {
     style: 'currency',
-    currency: currency,
+    currency: currency ?? 'EUR',
   }).format(value / 100);
 }
 

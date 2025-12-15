@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { getRevenueReport, getChurnReport } from '@/lib/api';
 import { useRequireSuperAdmin } from '@/lib/use-require-super-admin';
@@ -70,6 +70,7 @@ export default function ReportsPage() {
   const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' });
   const [filteringRevenue, setFilteringRevenue] = useState(false);
   const [filteringChurn, setFilteringChurn] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const loadData = useCallback(async () => {
     if (!token) return;
@@ -96,16 +97,38 @@ export default function ReportsPage() {
 
   const handleFilterRevenue = async () => {
     if (!token) return;
+    
+    // Validar datas
+    if (dateRange.startDate && dateRange.endDate) {
+      const start = new Date(dateRange.startDate);
+      const end = new Date(dateRange.endDate);
+      if (start > end) {
+        setToast({ message: 'A data de início deve ser anterior à data de fim.', kind: 'error' });
+        return;
+      }
+    }
+    
+    // Cancelar requisição anterior se existir
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    // Criar novo AbortController
+    abortControllerRef.current = new AbortController();
+    
     setFilteringRevenue(true);
     try {
       const revenue = await getRevenueReport(token, dateRange.startDate || undefined, dateRange.endDate || undefined);
       setRevenueReport(revenue);
       setToast({ message: 'Relatório de receita atualizado.', kind: 'success' });
     } catch (err) {
+      // Ignorar erros de abort
+      if (err instanceof Error && err.name === 'AbortError') return;
       const message = err instanceof Error ? err.message : 'Falha ao filtrar receita.';
       setToast({ message, kind: 'error' });
     } finally {
       setFilteringRevenue(false);
+      abortControllerRef.current = null;
     }
   };
 
