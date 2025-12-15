@@ -198,7 +198,7 @@ export default function SuperAdminDashboardPage() {
             <div key={i} className="h-32 animate-pulse rounded-2xl bg-ink-100" />
           ))}
         </div>
-      ) : metrics ? (
+      ) : metrics && metrics.companies && metrics.subscriptions && metrics.revenue ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             title="Empresas"
@@ -248,7 +248,7 @@ export default function SuperAdminDashboardPage() {
       ) : null}
 
       {/* Quick Stats Row */}
-      {metrics && (
+      {metrics && metrics.recent && metrics.recent.companies && metrics.recent.subscriptions && (
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Recent Companies */}
           <div className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card">

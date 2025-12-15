@@ -6,46 +6,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { getCompanyDetails, updateCompany } from '@/lib/api';
 import { useRequireSuperAdmin } from '@/lib/use-require-super-admin';
 import { Toast } from '@/components/toast';
+import { formatPhone, formatCnpj, formatCep, digitsOnly } from '@/lib/formatters';
 import type { CompanyDetails, UpdateCompanyInput } from '@/lib/types';
-
-/**
- * Format phone number as user types
- */
-function formatPhone(value: string): string {
-  const digits = value.replace(/\D/g, '').slice(0, 11);
-  if (digits.length <= 2) return digits;
-  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-  if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
-  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
-}
-
-/**
- * Format CNPJ as user types
- */
-function formatCnpj(value: string): string {
-  const digits = value.replace(/\D/g, '').slice(0, 14);
-  if (digits.length <= 2) return digits;
-  if (digits.length <= 5) return `${digits.slice(0, 2)}.${digits.slice(2)}`;
-  if (digits.length <= 8) return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5)}`;
-  if (digits.length <= 12) return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8)}`;
-  return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8, 12)}-${digits.slice(12)}`;
-}
-
-/**
- * Format CEP as user types
- */
-function formatCep(value: string): string {
-  const digits = value.replace(/\D/g, '').slice(0, 8);
-  if (digits.length <= 5) return digits;
-  return `${digits.slice(0, 5)}-${digits.slice(5)}`;
-}
-
-/**
- * Extract only digits from a string
- */
-function digitsOnly(value: string): string {
-  return value.replace(/\D/g, '');
-}
 
 export default function EditCompanyPage() {
   const params = useParams();
