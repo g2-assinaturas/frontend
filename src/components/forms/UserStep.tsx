@@ -42,8 +42,12 @@ export function UserStep({ defaultValues, onChange }: Props) {
           {...register('name')}
           className="w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-ink-900 outline-none ring-0 transition focus:border-ink-400"
           placeholder="Maria Silva"
+          aria-label="Nome completo"
+          aria-required="true"
+          aria-invalid={!!errors.name}
+          aria-describedby={errors.name ? 'name-error' : undefined}
         />
-        {errors.name && <p className="text-sm text-red-600">{errors.name.message}</p>}
+        {errors.name && <p id="name-error" className="text-sm text-red-600" role="alert">{errors.name.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -57,8 +61,12 @@ export function UserStep({ defaultValues, onChange }: Props) {
           className="w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-ink-900 outline-none ring-0 transition focus:border-ink-400"
           placeholder="voce@empresa.com"
           autoComplete="email"
+          aria-label="E-mail"
+          aria-required="true"
+          aria-invalid={!!errors.email}
+          aria-describedby={errors.email ? 'email-error' : undefined}
         />
-        {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
+        {errors.email && <p id="email-error" className="text-sm text-red-600" role="alert">{errors.email.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -73,8 +81,12 @@ export function UserStep({ defaultValues, onChange }: Props) {
           className="w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-ink-900 outline-none ring-0 transition focus:border-ink-400"
           placeholder="000.000.000-00"
           autoComplete="off"
+          aria-label="CPF"
+          aria-required="true"
+          aria-invalid={!!errors.cpf}
+          aria-describedby={errors.cpf ? 'cpf-error' : undefined}
         />
-        {errors.cpf && <p className="text-sm text-red-600">{errors.cpf.message}</p>}
+        {errors.cpf && <p id="cpf-error" className="text-sm text-red-600" role="alert">{errors.cpf.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -89,8 +101,12 @@ export function UserStep({ defaultValues, onChange }: Props) {
           className="w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-ink-900 outline-none ring-0 transition focus:border-ink-400"
           placeholder="(11) 99999-9999"
           autoComplete="tel"
+          aria-label="Telefone"
+          aria-required="true"
+          aria-invalid={!!errors.phone}
+          aria-describedby={errors.phone ? 'phone-error' : undefined}
         />
-        {errors.phone && <p className="text-sm text-red-600">{errors.phone.message}</p>}
+        {errors.phone && <p id="phone-error" className="text-sm text-red-600" role="alert">{errors.phone.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -104,8 +120,13 @@ export function UserStep({ defaultValues, onChange }: Props) {
           className="w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-ink-900 outline-none ring-0 transition focus:border-ink-400"
           placeholder="Mínimo 8 caracteres"
           autoComplete="new-password"
+          aria-label="Senha"
+          aria-required="true"
+          aria-invalid={!!errors.password}
+          aria-describedby={errors.password ? 'password-error password-requirements' : 'password-requirements'}
         />
-        {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
+        {errors.password && <p id="password-error" className="text-sm text-red-600" role="alert">{errors.password.message}</p>}
+        <p id="password-requirements" className="text-xs text-ink-500">Deve conter maiúscula, minúscula, número e símbolo</p>
       </div>
     </form>
   );

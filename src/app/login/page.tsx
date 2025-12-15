@@ -48,6 +48,8 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              aria-label="Email ou CPF"
+              aria-required="true"
             />
           </div>
 
@@ -63,6 +65,8 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              aria-label="Palavra-passe"
+              aria-required="true"
             />
             <div className="text-right">
               <Link className="text-xs text-ink-500 hover:text-ink-700 hover:underline" href="/forgot-password">

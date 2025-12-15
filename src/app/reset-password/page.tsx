@@ -92,9 +92,13 @@ function ResetPasswordPage() {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
+              aria-label="Nova palavra-passe"
+              aria-required="true"
+              aria-describedby="password-requirements password-error"
+              aria-invalid={!!errors.newPassword}
             />
-            {errors.newPassword && <p className="text-sm text-red-600">{errors.newPassword}</p>}
-            <p className="text-xs text-ink-500">
+            {errors.newPassword && <p id="password-error" className="text-sm text-red-600" role="alert">{errors.newPassword}</p>}
+            <p id="password-requirements" className="text-xs text-ink-500">
               Deve conter maiúscula, minúscula, número e símbolo.
             </p>
           </div>
@@ -111,8 +115,12 @@ function ResetPasswordPage() {
               value={confirmNewPassword}
               onChange={(e) => setConfirmNewPassword(e.target.value)}
               required
+              aria-label="Confirmar palavra-passe"
+              aria-required="true"
+              aria-describedby="confirm-password-error"
+              aria-invalid={!!errors.confirmNewPassword}
             />
-            {errors.confirmNewPassword && <p className="text-sm text-red-600">{errors.confirmNewPassword}</p>}
+            {errors.confirmNewPassword && <p id="confirm-password-error" className="text-sm text-red-600" role="alert">{errors.confirmNewPassword}</p>}
           </div>
 
           <button

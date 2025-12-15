@@ -60,7 +60,11 @@ export default function ForgotPasswordPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                aria-label="Email"
+                aria-required="true"
+                aria-describedby="email-help"
               />
+              <p id="email-help" className="sr-only">Introduza o email associado à sua conta para recuperar a palavra-passe</p>
             </div>
 
             <button
