@@ -5,6 +5,7 @@
  */
 
 import type {
+  ChurnReport,
   CompanyDetails,
   CompanySummary,
   CompanyUser,
@@ -12,9 +13,18 @@ import type {
   CreateCompanyResponse,
   DashboardMetrics,
   Invoice,
+  InvoiceDetails,
+  InvoiceFilters,
+  InvoiceStats,
+  InvoiceStatus,
   LoginResponse,
   Plan,
+  RevenueReport,
   Subscription,
+  SubscriptionDetails,
+  SubscriptionFilters,
+  SubscriptionStats,
+  SubscriptionStatus,
   SuperAdminLoginResponse,
   SuperAdminUser,
   UpdateCompanyInput,
@@ -232,6 +242,111 @@ export async function updateCompany(id: string, data: UpdateCompanyInput, token:
 /** Permanently delete a company and all related data */
 export async function deleteCompany(id: string, token: string): Promise<{ message: string }> {
   return apiFetch<{ message: string }>(`/super-admin/companies/${id}`, withAuth(token, { method: 'DELETE' }));
+}
+
+// ===== SUPER ADMIN SUBSCRIPTION MANAGEMENT =====
+
+/** List all subscriptions with optional filters (super admin only) */
+export async function listAllSubscriptions(token: string, filters?: SubscriptionFilters): Promise<SubscriptionDetails[]> {
+  const params = new URLSearchParams();
+  if (filters?.status) params.append('status', filters.status);
+  if (filters?.companyId) params.append('companyId', filters.companyId);
+  if (filters?.planId) params.append('planId', filters.planId);
+
+  const query = params.toString() ? `?${params.toString()}` : '';
+  const response = await apiFetch<{ success: boolean; data: SubscriptionDetails[] }>(
+    `/super-admin/subscriptions${query}`,
+    withAuth(token, { cache: 'no-store' })
+  );
+  return response.data;
+}
+
+/** Get subscription statistics (super admin only) */
+export async function getSubscriptionStats(token: string): Promise<SubscriptionStats> {
+  const response = await apiFetch<{ success: boolean; data: SubscriptionStats }>(
+    '/super-admin/subscriptions/stats',
+    withAuth(token, { cache: 'no-store' })
+  );
+  return response.data;
+}
+
+/** Update subscription status (super admin only) */
+export async function updateSubscriptionStatus(id: string, status: SubscriptionStatus, token: string): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>(`/super-admin/subscriptions/${id}/status`, withAuth(token, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  }));
+}
+
+/** Cancel a subscription (super admin only) */
+export async function adminCancelSubscription(id: string, token: string, cancelAtPeriodEnd = false): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>(`/super-admin/subscriptions/${id}/cancel`, withAuth(token, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cancelAtPeriodEnd }),
+  }));
+}
+
+// ===== SUPER ADMIN INVOICE MANAGEMENT =====
+
+/** List all invoices with optional filters (super admin only) */
+export async function listAllInvoices(token: string, filters?: InvoiceFilters): Promise<InvoiceDetails[]> {
+  const params = new URLSearchParams();
+  if (filters?.status) params.append('status', filters.status);
+  if (filters?.companyId) params.append('companyId', filters.companyId);
+  if (filters?.startDate) params.append('startDate', filters.startDate);
+  if (filters?.endDate) params.append('endDate', filters.endDate);
+
+  const query = params.toString() ? `?${params.toString()}` : '';
+  const response = await apiFetch<{ success: boolean; data: InvoiceDetails[] }>(
+    `/super-admin/invoices${query}`,
+    withAuth(token, { cache: 'no-store' })
+  );
+  return response.data;
+}
+
+/** Get invoice statistics (super admin only) */
+export async function getInvoiceStats(token: string): Promise<InvoiceStats> {
+  const response = await apiFetch<{ success: boolean; data: InvoiceStats }>(
+    '/super-admin/invoices/stats',
+    withAuth(token, { cache: 'no-store' })
+  );
+  return response.data;
+}
+
+/** Update invoice status (super admin only) */
+export async function updateInvoiceStatus(id: string, status: InvoiceStatus, token: string): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>(`/super-admin/invoices/${id}/status`, withAuth(token, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  }));
+}
+
+// ===== SUPER ADMIN REPORTS =====
+
+/** Get revenue report with optional date range (super admin only) */
+export async function getRevenueReport(token: string, startDate?: string, endDate?: string): Promise<RevenueReport> {
+  const params = new URLSearchParams();
+  if (startDate) params.append('startDate', startDate);
+  if (endDate) params.append('endDate', endDate);
+
+  const query = params.toString() ? `?${params.toString()}` : '';
+  const response = await apiFetch<{ success: boolean; data: RevenueReport }>(
+    `/super-admin/reports/revenue${query}`,
+    withAuth(token, { cache: 'no-store' })
+  );
+  return response.data;
+}
+
+/** Get churn report for specified period (super admin only) */
+export async function getChurnReport(token: string, periodMonths: number = 1): Promise<ChurnReport> {
+  const response = await apiFetch<{ success: boolean; data: ChurnReport }>(
+    `/super-admin/reports/churn?periodMonths=${periodMonths}`,
+    withAuth(token, { cache: 'no-store' })
+  );
+  return response.data;
 }
 
 // ===== PASSWORD RECOVERY ENDPOINTS =====
