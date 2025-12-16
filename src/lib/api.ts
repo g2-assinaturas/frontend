@@ -5,14 +5,19 @@
  */
 
 import type {
+  CompanyDetails,
   CompanySummary,
   CompanyUser,
+  CreateCompanyInput,
+  CreateCompanyResponse,
+  DashboardMetrics,
   Invoice,
   LoginResponse,
   Plan,
   Subscription,
   SuperAdminLoginResponse,
   SuperAdminUser,
+  UpdateCompanyInput,
 } from './types';
 import type { RegisterInput } from './validators';
 import { digitsOnly } from './formatters';
@@ -196,6 +201,39 @@ export async function toggleCompanyStatus(id: string, token: string) {
   return apiFetch<{ message: string }>(`/super-admin/companies/${id}/toggle-status`, withAuth(token, { method: 'PATCH' }));
 }
 
+/** Get dashboard metrics including MRR, revenue, companies and subscriptions stats */
+export async function getDashboardMetrics(token: string): Promise<DashboardMetrics> {
+  return apiFetch<DashboardMetrics>('/super-admin/metrics/dashboard', withAuth(token, { cache: 'no-store' }));
+}
+
+/** Get detailed information about a specific company */
+export async function getCompanyDetails(id: string, token: string): Promise<CompanyDetails> {
+  return apiFetch<CompanyDetails>(`/super-admin/companies/${id}`, withAuth(token, { cache: 'no-store' }));
+}
+
+/** Create a new company with address and initial admin user */
+export async function createCompany(data: CreateCompanyInput, token: string): Promise<CreateCompanyResponse> {
+  return apiFetch<CreateCompanyResponse>('/super-admin/companies', withAuth(token, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  }));
+}
+
+/** Update company information */
+export async function updateCompany(id: string, data: UpdateCompanyInput, token: string): Promise<{ company: CompanySummary; message: string }> {
+  return apiFetch<{ company: CompanySummary; message: string }>(`/super-admin/companies/${id}`, withAuth(token, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  }));
+}
+
+/** Permanently delete a company and all related data */
+export async function deleteCompany(id: string, token: string): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>(`/super-admin/companies/${id}`, withAuth(token, { method: 'DELETE' }));
+}
+
 // ===== PASSWORD RECOVERY ENDPOINTS =====
 
 /**
@@ -224,4 +262,23 @@ export async function resetPassword(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ token, newPassword, confirmNewPassword }),
   });
+}
+
+// ===== PASSWORD CHANGE ENDPOINT =====
+
+/**
+ * Change password for authenticated company user
+ * Requires current password verification
+ */
+export async function changePassword(
+  token: string,
+  currentPassword: string,
+  newPassword: string,
+  confirmNewPassword: string,
+): Promise<{ success: boolean; message: string; data: { requiresReauth: boolean } }> {
+  return apiFetch<{ success: boolean; message: string; data: { requiresReauth: boolean } }>('/company-auth/change-password', withAuth(token, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ currentPassword, newPassword, confirmNewPassword }),
+  }));
 }

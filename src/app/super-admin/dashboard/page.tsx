@@ -2,24 +2,140 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { listCompanies, toggleCompanyStatus } from '@/lib/api';
+import { listCompanies, toggleCompanyStatus, getDashboardMetrics, deleteCompany } from '@/lib/api';
 import { useRequireSuperAdmin } from '@/lib/use-require-super-admin';
-import type { CompanySummary } from '@/lib/types';
+import type { CompanySummary, DashboardMetrics } from '@/lib/types';
 import { Toast } from '@/components/toast';
+
+/**
+ * Format currency value in BRL
+ * Divides by 100 as prices are stored in centavos
+ */
+function formatCurrency(value: number): string {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value / 100);
+}
+
+/**
+ * Format date to localized string
+ */
+function formatDate(dateString: string | null): string {
+  if (!dateString) return '-';
+  return new Date(dateString).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+/**
+ * Metrics Card Component
+ */
+function MetricCard({ 
+  title, 
+  value, 
+  subtitle, 
+  icon,
+  color = 'blue' 
+}: { 
+  title: string; 
+  value: string | number; 
+  subtitle?: string;
+  icon: React.ReactNode;
+  color?: 'blue' | 'green' | 'purple' | 'orange';
+}) {
+  const colorClasses = {
+    blue: 'bg-blue-50 text-blue-600',
+    green: 'bg-emerald-50 text-emerald-600',
+    purple: 'bg-purple-50 text-purple-600',
+    orange: 'bg-orange-50 text-orange-600',
+  };
+
+  return (
+    <div className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm font-medium text-ink-500">{title}</p>
+          <p className="mt-2 text-3xl font-bold text-ink-900">{value}</p>
+          {subtitle && <p className="mt-1 text-sm text-ink-500">{subtitle}</p>}
+        </div>
+        <div className={`rounded-xl p-3 ${colorClasses[color]}`}>
+          {icon}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Delete confirmation modal
+ */
+function DeleteModal({
+  companyName,
+  onConfirm,
+  onCancel,
+  loading,
+}: {
+  companyName: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  loading: boolean;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+        <h3 className="text-lg font-semibold text-ink-900">Confirmar eliminação</h3>
+        <p className="mt-2 text-sm text-ink-600">
+          Tem a certeza que deseja eliminar permanentemente a empresa <strong>{companyName}</strong>? 
+          Esta ação não pode ser desfeita e todos os dados serão perdidos.
+        </p>
+        <div className="mt-6 flex gap-3 justify-end">
+          <button
+            onClick={onCancel}
+            disabled={loading}
+            className="rounded-xl border border-ink-200 px-4 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={loading}
+            className="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+          >
+            {loading ? 'A eliminar...' : 'Eliminar'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function SuperAdminDashboardPage() {
   const { token, user, logout, loading: authLoading } = useRequireSuperAdmin();
   const [companies, setCompanies] = useState<CompanySummary[]>([]);
+  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<{ message: string; kind: 'error' | 'success' | 'info' } | null>(null);
+  const [deleteModal, setDeleteModal] = useState<{ id: string; name: string } | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (!token) return;
     setLoading(true);
-    listCompanies(token)
-      .then(setCompanies)
+    
+    // Load companies and metrics in parallel
+    Promise.all([
+      listCompanies(token),
+      getDashboardMetrics(token),
+    ])
+      .then(([companiesData, metricsData]) => {
+        setCompanies(companiesData);
+        setMetrics(metricsData);
+      })
       .catch((err) => {
-        const message = err instanceof Error ? err.message : 'Erro ao carregar empresas.';
+        const message = err instanceof Error ? err.message : 'Erro ao carregar dados.';
         setToast({ message, kind: 'error' });
       })
       .finally(() => setLoading(false));
@@ -37,16 +153,33 @@ export default function SuperAdminDashboardPage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!token || !deleteModal) return;
+    setDeleting(true);
+    try {
+      await deleteCompany(deleteModal.id, token);
+      setCompanies((prev) => prev.filter((c) => c.id !== deleteModal.id));
+      setToast({ message: 'Empresa eliminada com sucesso.', kind: 'success' });
+      setDeleteModal(null);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Falha ao eliminar empresa.';
+      setToast({ message, kind: 'error' });
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
-    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-6 py-12">
-      <header className="flex items-center justify-between">
+    <main className="mx-auto flex min-h-screen max-w-7xl flex-col gap-8 px-6 py-12">
+      {/* Header */}
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-ink-500">Super Admin</p>
-          <h1 className="text-3xl font-semibold text-ink-900">Empresas</h1>
-          <p className="text-sm text-ink-600">Sessão: {user?.email ?? '—'}</p>
+          <h1 className="text-3xl font-semibold text-ink-900">Dashboard</h1>
+          <p className="text-sm text-ink-600">Bem-vindo, {user?.name ?? user?.email ?? '—'}</p>
         </div>
         <div className="flex gap-3 text-sm font-semibold">
-          <Link className="rounded-full border border-ink-200 px-4 py-2 text-ink-900" href="/">
+          <Link className="rounded-full border border-ink-200 px-4 py-2 text-ink-900 hover:bg-ink-50" href="/">
             Landing
           </Link>
           <button
@@ -58,45 +191,218 @@ export default function SuperAdminDashboardPage() {
         </div>
       </header>
 
-      {authLoading || loading ? <p className="text-ink-700">A carregar empresas...</p> : null}
-
-      <div className="overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-card">
-        <div className="grid grid-cols-6 gap-2 border-b border-ink-100 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ink-500">
-          <span>Nome</span>
-          <span>Email</span>
-          <span>Clientes</span>
-          <span>Subscrições</span>
-          <span>Estado</span>
-          <span>Ações</span>
+      {/* Metrics Cards */}
+      {authLoading || loading ? (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-32 animate-pulse rounded-2xl bg-ink-100" />
+          ))}
         </div>
-        {companies.length === 0 && !loading ? (
-          <p className="px-4 py-6 text-sm text-ink-700">Nenhuma empresa encontrada.</p>
-        ) : null}
-        {companies.map((company) => (
-          <div key={company.id} className="grid grid-cols-6 items-center gap-2 border-b border-ink-50 px-4 py-3 text-sm text-ink-700 last:border-b-0">
-            <div>
-              <p className="font-semibold text-ink-900">{company.name}</p>
-              <p className="text-xs text-ink-500">{company.address?.city ?? '-'} </p>
+      ) : metrics ? (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <MetricCard
+            title="Empresas"
+            value={metrics.companies.total}
+            subtitle={`${metrics.companies.active} ativas`}
+            color="blue"
+            icon={
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            }
+          />
+          <MetricCard
+            title="Assinaturas"
+            value={metrics.subscriptions.total}
+            subtitle={`${metrics.subscriptions.active} ativas`}
+            color="green"
+            icon={
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+            }
+          />
+          <MetricCard
+            title="Receita Total"
+            value={formatCurrency(metrics.revenue.total)}
+            subtitle="Todas as faturas pagas"
+            color="purple"
+            icon={
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            }
+          />
+          <MetricCard
+            title="MRR"
+            value={formatCurrency(metrics.revenue.mrr)}
+            subtitle="Receita mensal recorrente"
+            color="orange"
+            icon={
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            }
+          />
+        </div>
+      ) : null}
+
+      {/* Quick Stats Row */}
+      {metrics && (
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Recent Companies */}
+          <div className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-ink-900">Empresas Recentes</h2>
+              <Link href="/super-admin/companies/new" className="text-sm font-semibold text-blue-600 hover:underline">
+                + Nova Empresa
+              </Link>
             </div>
-            <span>{company.email ?? '-'}</span>
-            <span>{company.customersCount ?? 0}</span>
-            <span>{company.subscriptionsCount ?? 0}</span>
-            <span className={company.isActive ? 'text-emerald-700' : 'text-red-600'}>
-              {company.isActive ? 'Ativa' : 'Inativa'}
-            </span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleToggle(company.id)}
-                className="rounded-lg border border-ink-200 px-3 py-2 text-xs font-semibold text-ink-900"
-              >
-                Alternar
-              </button>
+            <div className="space-y-3">
+              {metrics.recent.companies.length === 0 ? (
+                <p className="text-sm text-ink-500">Nenhuma empresa registada.</p>
+              ) : (
+                metrics.recent.companies.map((company) => (
+                  <Link
+                    key={company.id}
+                    href={`/super-admin/companies/${company.id}`}
+                    className="flex items-center justify-between p-3 rounded-xl hover:bg-ink-50 transition"
+                  >
+                    <div>
+                      <p className="font-medium text-ink-900">{company.name}</p>
+                      <p className="text-xs text-ink-500">{formatDate(company.createdAt)}</p>
+                    </div>
+                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${company.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                      {company.isActive ? 'Ativa' : 'Inativa'}
+                    </span>
+                  </Link>
+                ))
+              )}
             </div>
           </div>
-        ))}
-      </div>
 
-      {toast ? <Toast message={toast.message} kind={toast.kind} onClose={() => setToast(null)} /> : null}
+          {/* Recent Subscriptions */}
+          <div className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card">
+            <h2 className="text-lg font-semibold text-ink-900 mb-4">Assinaturas Recentes</h2>
+            <div className="space-y-3">
+              {metrics.recent.subscriptions.length === 0 ? (
+                <p className="text-sm text-ink-500">Nenhuma assinatura registada.</p>
+              ) : (
+                metrics.recent.subscriptions.map((sub) => (
+                  <div
+                    key={sub.id}
+                    className="flex items-center justify-between p-3 rounded-xl bg-ink-50"
+                  >
+                    <div>
+                      <p className="font-medium text-ink-900">{sub.company.name}</p>
+                      <p className="text-xs text-ink-500">{sub.plan.name} · {formatDate(sub.createdAt)}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-ink-900">{formatCurrency(sub.plan.price)}</p>
+                      <span className={`text-xs font-medium ${
+                        sub.status === 'ACTIVE' ? 'text-emerald-600' : 
+                        sub.status === 'TRIALING' ? 'text-blue-600' : 'text-ink-500'
+                      }`}>
+                        {sub.status}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Companies Table */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-ink-900">Todas as Empresas</h2>
+          <Link
+            href="/super-admin/companies/new"
+            className="rounded-xl bg-ink-900 px-4 py-2 text-sm font-semibold text-white shadow-card transition hover:-translate-y-0.5 hover:shadow-lg"
+          >
+            + Nova Empresa
+          </Link>
+        </div>
+
+        <div className="overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-card">
+          <div className="overflow-x-auto">
+            <div className="min-w-[900px]">
+              <div className="grid grid-cols-7 gap-2 border-b border-ink-100 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ink-500">
+                <span>Nome</span>
+                <span>Email</span>
+                <span>Telefone</span>
+                <span>Clientes</span>
+                <span>Subscrições</span>
+                <span>Estado</span>
+                <span>Ações</span>
+              </div>
+              {loading ? (
+                <div className="px-4 py-8 text-center text-ink-500">A carregar empresas...</div>
+              ) : companies.length === 0 ? (
+                <p className="px-4 py-6 text-sm text-ink-700">Nenhuma empresa encontrada.</p>
+              ) : (
+                companies.map((company) => (
+                  <div key={company.id} className="grid grid-cols-7 items-center gap-2 border-b border-ink-50 px-4 py-3 text-sm text-ink-700 last:border-b-0 hover:bg-ink-50">
+                    <div>
+                      <Link href={`/super-admin/companies/${company.id}`} className="font-semibold text-ink-900 hover:text-blue-600">
+                        {company.name}
+                      </Link>
+                      <p className="text-xs text-ink-500">{company.address?.city ?? '-'}</p>
+                    </div>
+                    <span className="truncate">{company.email ?? '-'}</span>
+                    <span>{company.phone ?? '-'}</span>
+                    <span>{company.customersCount ?? 0}</span>
+                    <span>{company.subscriptionsCount ?? 0}</span>
+                    <span className={company.isActive ? 'text-emerald-700' : 'text-red-600'}>
+                      {company.isActive ? 'Ativa' : 'Inativa'}
+                    </span>
+                    <div className="flex gap-2">
+                      <Link
+                        href={`/super-admin/companies/${company.id}`}
+                        className="rounded-lg border border-ink-200 px-3 py-1.5 text-xs font-semibold text-ink-700 hover:bg-ink-100"
+                      >
+                        Ver
+                      </Link>
+                      <Link
+                        href={`/super-admin/companies/${company.id}/edit`}
+                        className="rounded-lg border border-ink-200 px-3 py-1.5 text-xs font-semibold text-ink-700 hover:bg-ink-100"
+                      >
+                        Editar
+                      </Link>
+                      <button
+                        onClick={() => handleToggle(company.id)}
+                        className="rounded-lg border border-ink-200 px-3 py-1.5 text-xs font-semibold text-ink-700 hover:bg-ink-100"
+                      >
+                        {company.isActive ? 'Desativar' : 'Ativar'}
+                      </button>
+                      <button
+                        onClick={() => setDeleteModal({ id: company.id, name: company.name })}
+                        className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Delete Confirmation Modal */}
+      {deleteModal && (
+        <DeleteModal
+          companyName={deleteModal.name}
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteModal(null)}
+          loading={deleting}
+        />
+      )}
+
+      {toast && <Toast message={toast.message} kind={toast.kind} onClose={() => setToast(null)} />}
     </main>
   );
 }
