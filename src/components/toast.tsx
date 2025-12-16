@@ -5,9 +5,9 @@ import { useEffect } from 'react';
 export type ToastKind = 'error' | 'success' | 'info';
 
 const palette: Record<ToastKind, string> = {
-  error: 'bg-red-50 text-red-800 border-red-200',
-  success: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-  info: 'bg-ink-900 text-ink-50 border-ink-800',
+  error: 'bg-red-50 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800',
+  success: 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800',
+  info: 'bg-ink-900 text-ink-50 border-ink-800 dark:bg-slate-700 dark:text-slate-100 dark:border-slate-600',
 };
 
 export function Toast({
@@ -33,7 +33,7 @@ export function Toast({
       aria-live="polite"
     >
       <span>{message}</span>
-      <button className="text-xs underline" onClick={onClose}>
+      <button className="text-xs underline opacity-80 hover:opacity-100" onClick={onClose}>
         fechar
       </button>
     </div>

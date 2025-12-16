@@ -4,6 +4,7 @@ import { FormEvent, Suspense, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Toast } from '@/components/toast';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { checkoutSubscription } from '@/lib/api';
 import { useRequireAuth } from '@/lib/use-require-auth';
 
@@ -36,31 +37,34 @@ function CheckoutContent() {
   };
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col gap-8 px-6 py-12">
+    <main className="mx-auto flex min-h-screen max-w-3xl flex-col gap-8 px-6 py-12 dark:bg-slate-900">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-ink-500">Checkout</p>
-          <h1 className="text-3xl font-semibold text-ink-900">Confirmar subscrição</h1>
+          <p className="text-sm text-ink-500 dark:text-slate-400">Checkout</p>
+          <h1 className="text-3xl font-semibold text-ink-900 dark:text-white">Confirmar subscrição</h1>
         </div>
-        <Link className="text-sm font-semibold text-ink-700 hover:text-ink-900" href="/plans">
-          Voltar aos planos
-        </Link>
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          <Link className="text-sm font-semibold text-ink-700 hover:text-ink-900 dark:text-slate-300 dark:hover:text-white" href="/plans">
+            Voltar aos planos
+          </Link>
+        </div>
       </div>
 
-      <form className="space-y-4 rounded-2xl border border-ink-100 bg-white p-6 shadow-card" onSubmit={handleCheckout}>
-        <div className="space-y-1 text-sm text-ink-700">
+      <form className="space-y-4 rounded-2xl border border-ink-100 bg-white p-6 shadow-card dark:border-slate-700 dark:bg-slate-800" onSubmit={handleCheckout}>
+        <div className="space-y-1 text-sm text-ink-700 dark:text-slate-300">
           <p>
-            Plano selecionado: <span className="font-semibold text-ink-900">{planId || 'nenhum'}</span>
+            Plano selecionado: <span className="font-semibold text-ink-900 dark:text-white">{planId || 'nenhum'}</span>
           </p>
-          <p className="text-ink-500">Confirme para criar a subscrição. Necessita de sessão iniciada.</p>
+          <p className="text-ink-500 dark:text-slate-400">Confirme para criar a subscrição. Necessita de sessão iniciada.</p>
         </div>
 
-        {!planId ? <p className="text-sm text-red-700">Escolha um plano para continuar.</p> : null}
+        {!planId ? <p className="text-sm text-red-700 dark:text-red-400">Escolha um plano para continuar.</p> : null}
 
         <button
           type="submit"
           disabled={!planId || loading || authLoading}
-          className="inline-flex w-full items-center justify-center rounded-xl bg-ink-900 px-4 py-3 text-sm font-semibold text-ink-50 shadow-card transition hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
+          className="inline-flex w-full items-center justify-center rounded-xl bg-ink-900 px-4 py-3 text-sm font-semibold text-ink-50 shadow-card transition hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70 dark:bg-slate-600 dark:hover:bg-slate-500"
         >
           {loading ? 'A processar...' : 'Confirmar subscrição'}
         </button>
@@ -73,7 +77,7 @@ function CheckoutContent() {
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={<div className="px-6 py-12 text-sm text-ink-600">A carregar checkout...</div>}>
+    <Suspense fallback={<div className="px-6 py-12 text-sm text-ink-600 dark:bg-slate-900 dark:text-slate-300">A carregar checkout...</div>}>
       <CheckoutContent />
     </Suspense>
   );

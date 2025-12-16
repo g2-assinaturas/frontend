@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt">
-      <body className={`${spaceGrotesk.variable} min-h-screen bg-ink-50 text-ink-900 font-sans`}>
+    <html lang="pt" suppressHydrationWarning>
+      <body className={`${spaceGrotesk.variable} min-h-screen bg-ink-50 text-ink-900 font-sans dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200`}>
         <Providers>{children}</Providers>
       </body>
     </html>
