@@ -21,11 +21,6 @@ export default function ForgotPasswordPage() {
       const result = await forgotPassword(email);
       setSubmitted(true);
       setToast({ message: result.message, kind: 'success' });
-
-      // Em desenvolvimento, o token é retornado para testes
-      if (result.token && process.env.NODE_ENV === 'development') {
-        console.log('Token de reset (apenas para desenvolvimento):', result.token);
-      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao processar pedido.';
       setToast({ message, kind: 'error' });

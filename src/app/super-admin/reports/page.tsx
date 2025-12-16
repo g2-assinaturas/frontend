@@ -7,59 +7,8 @@ import { useRequireSuperAdmin } from '@/lib/use-require-super-admin';
 import type { RevenueReport, ChurnReport } from '@/lib/types';
 import { Toast } from '@/components/toast';
 import { ThemeToggle } from '@/components/theme-toggle';
-
-function formatCurrency(value: number, currency: string = 'BRL'): string {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: currency,
-  }).format(value / 100);
-}
-
-function formatDate(dateString: string | null | undefined): string {
-  if (!dateString) return '-';
-  return new Date(dateString).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
-}
-
-function MetricCard({ 
-  title, 
-  value, 
-  subtitle, 
-  icon,
-  color = 'blue' 
-}: { 
-  title: string; 
-  value: string | number; 
-  subtitle?: string;
-  icon: React.ReactNode;
-  color?: 'blue' | 'green' | 'purple' | 'orange' | 'red';
-}) {
-  const colorClasses = {
-    blue: 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
-    green: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
-    purple: 'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
-    orange: 'bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400',
-    red: 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400',
-  };
-
-  return (
-    <div className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card dark:border-slate-700 dark:bg-slate-800">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm font-medium text-ink-500 dark:text-slate-400">{title}</p>
-          <p className="mt-2 text-3xl font-bold text-ink-900 dark:text-white">{value}</p>
-          {subtitle && <p className="mt-1 text-sm text-ink-500 dark:text-slate-400">{subtitle}</p>}
-        </div>
-        <div className={`rounded-xl p-3 ${colorClasses[color]}`}>
-          {icon}
-        </div>
-      </div>
-    </div>
-  );
-}
+import { MetricCard } from '@/components/metric-card';
+import { formatCurrency, formatDate } from '@/lib/formatters';
 
 export default function ReportsPage() {
   const { token, loading: authLoading } = useRequireSuperAdmin();

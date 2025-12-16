@@ -15,18 +15,18 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const STORAGE_KEY = 'theme';
 
 /**
- * Get the initial theme from localStorage or system preference
+ * Obtém o tema inicial do localStorage ou preferência do sistema
  */
 function getInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'light';
   
-  // Check localStorage first
+  // Verifica localStorage primeiro
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored === 'dark' || stored === 'light') {
     return stored;
   }
   
-  // Fall back to system preference
+  // Recorre à preferência do sistema
   if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
     return 'dark';
   }
@@ -35,7 +35,7 @@ function getInitialTheme(): Theme {
 }
 
 /**
- * Apply theme class to the document root
+ * Aplica a classe do tema ao root do documento
  */
 function applyTheme(theme: Theme) {
   if (typeof window === 'undefined') return;
@@ -52,7 +52,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('light');
   const [mounted, setMounted] = useState(false);
 
-  // Initialize theme on mount
+  // Inicializa tema ao montar
   useEffect(() => {
     const initialTheme = getInitialTheme();
     setThemeState(initialTheme);
@@ -60,12 +60,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setMounted(true);
   }, []);
 
-  // Listen for system theme changes
+  // Escuta mudanças no tema do sistema
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     
     const handleChange = (e: MediaQueryListEvent) => {
-      // Only auto-switch if user hasn't explicitly set a preference
+      // Só alterna automaticamente se usuário não definiu preferência explícita
       const stored = localStorage.getItem(STORAGE_KEY);
       if (!stored) {
         const newTheme = e.matches ? 'dark' : 'light';
@@ -89,7 +89,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme(newTheme);
   }, [theme, setTheme]);
 
-  // Prevent flash of incorrect theme
+  // Previne flash de tema incorreto
   if (!mounted) {
     return null;
   }

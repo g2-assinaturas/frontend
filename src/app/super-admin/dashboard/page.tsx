@@ -7,111 +7,9 @@ import { useRequireSuperAdmin } from '@/lib/use-require-super-admin';
 import type { CompanySummary, DashboardMetrics } from '@/lib/types';
 import { Toast } from '@/components/toast';
 import { ThemeToggle } from '@/components/theme-toggle';
-
-/**
- * Format currency value in BRL
- * Divides by 100 as prices are stored in centavos
- */
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(value / 100);
-}
-
-/**
- * Format date to localized string
- */
-function formatDate(dateString: string | null): string {
-  if (!dateString) return '-';
-  return new Date(dateString).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
-}
-
-/**
- * Metrics Card Component
- */
-function MetricCard({ 
-  title, 
-  value, 
-  subtitle, 
-  icon,
-  color = 'blue' 
-}: { 
-  title: string; 
-  value: string | number; 
-  subtitle?: string;
-  icon: React.ReactNode;
-  color?: 'blue' | 'green' | 'purple' | 'orange';
-}) {
-  const colorClasses = {
-    blue: 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
-    green: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
-    purple: 'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
-    orange: 'bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400',
-  };
-
-  return (
-    <div className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card dark:border-slate-700 dark:bg-slate-800">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm font-medium text-ink-500 dark:text-slate-400">{title}</p>
-          <p className="mt-2 text-3xl font-bold text-ink-900 dark:text-white">{value}</p>
-          {subtitle && <p className="mt-1 text-sm text-ink-500 dark:text-slate-400">{subtitle}</p>}
-        </div>
-        <div className={`rounded-xl p-3 ${colorClasses[color]}`}>
-          {icon}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/**
- * Delete confirmation modal
- */
-function DeleteModal({
-  companyName,
-  onConfirm,
-  onCancel,
-  loading,
-}: {
-  companyName: string;
-  onConfirm: () => void;
-  onCancel: () => void;
-  loading: boolean;
-}) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-800">
-        <h3 className="text-lg font-semibold text-ink-900 dark:text-white">Confirmar eliminação</h3>
-        <p className="mt-2 text-sm text-ink-600 dark:text-slate-300">
-          Tem a certeza que deseja eliminar permanentemente a empresa <strong>{companyName}</strong>? 
-          Esta ação não pode ser desfeita e todos os dados serão perdidos.
-        </p>
-        <div className="mt-6 flex gap-3 justify-end">
-          <button
-            onClick={onCancel}
-            disabled={loading}
-            className="rounded-xl border border-ink-200 px-4 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={onConfirm}
-            disabled={loading}
-            className="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
-          >
-            {loading ? 'A eliminar...' : 'Eliminar'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+import { DeleteModal } from '@/components/delete-modal';
+import { MetricCard } from '@/components/metric-card';
+import { formatCurrency, formatDate } from '@/lib/formatters';
 
 export default function SuperAdminDashboardPage() {
   const { token, user, logout, loading: authLoading } = useRequireSuperAdmin();
@@ -457,7 +355,7 @@ export default function SuperAdminDashboardPage() {
       {/* Delete Confirmation Modal */}
       {deleteModal && (
         <DeleteModal
-          companyName={deleteModal.name}
+          itemName={deleteModal.name}
           onConfirm={handleDelete}
           onCancel={() => setDeleteModal(null)}
           loading={deleting}

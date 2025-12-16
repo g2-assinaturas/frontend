@@ -1,6 +1,5 @@
 import { z } from 'zod';
-
-const onlyDigits = (value: string) => value.replace(/\D/g, '');
+import { digitsOnly } from './formatters';
 
 const brPhoneRegex = /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/;
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/;
@@ -11,13 +10,13 @@ export const CompanySchema = z.object({
   phone: z
     .string()
     .min(10, 'Telefone inválido')
-    .refine((v) => brPhoneRegex.test(v) || /^\d{10,11}$/.test(onlyDigits(v)), {
+    .refine((v) => brPhoneRegex.test(v) || /^\d{10,11}$/.test(digitsOnly(v)), {
       message: 'Telefone deve ser válido (DDD + número)',
     }),
   cnpj: z
     .string()
     .optional()
-    .refine((v) => !v || [11, 14].includes(onlyDigits(v).length), {
+    .refine((v) => !v || [11, 14].includes(digitsOnly(v).length), {
       message: 'CPF ou CNPJ deve ter 11 ou 14 dígitos',
     }),
   description: z.string().optional().or(z.literal('')),
@@ -31,7 +30,7 @@ export const AddressSchema = z.object({
   state: z.string().regex(/^[A-Za-z]{2}$/, 'Estado deve ter 2 letras'),
   zipCode: z
     .string()
-    .refine((v) => /^\d{5}-?\d{3}$/.test(v) || onlyDigits(v).length === 8, {
+    .refine((v) => /^\d{5}-?\d{3}$/.test(v) || digitsOnly(v).length === 8, {
       message: 'CEP deve ser válido (8 dígitos)',
     }),
   ibgeCode: z.string().optional(),
@@ -44,12 +43,12 @@ export const UserSchema = z.object({
   phone: z
     .string()
     .min(10, 'Telefone inválido')
-    .refine((v) => brPhoneRegex.test(v) || /^\d{10,11}$/.test(onlyDigits(v)), {
+    .refine((v) => brPhoneRegex.test(v) || /^\d{10,11}$/.test(digitsOnly(v)), {
       message: 'Telefone deve ser válido (DDD + número)',
     }),
   cpf: z
     .string()
-    .refine((v) => onlyDigits(v).length === 11, {
+    .refine((v) => digitsOnly(v).length === 11, {
       message: 'CPF deve ter 11 dígitos',
     }),
   password: z

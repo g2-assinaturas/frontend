@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useSuperAdmin } from './super-admin-context';
 
 /**
- * Authentication guard hook for super admin pages
- * Redirects to super admin login page if user is not authenticated
- * Use this hook at the top of any page that requires super admin privileges
- * @returns Super admin context with token, user, login, logout, and loading state
+ * Hook de guarda de autenticação para páginas de super admin
+ * Redireciona para página de login de super admin se usuário não estiver autenticado
+ * Use este hook no topo de qualquer página que requer privilégios de super admin
+ * @returns Contexto de super admin com token, user, login, logout e loading state
  */
 export function useRequireSuperAdmin() {
   const router = useRouter();

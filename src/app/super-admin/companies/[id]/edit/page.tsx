@@ -22,14 +22,14 @@ export default function EditCompanyPage() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ message: string; kind: 'error' | 'success' | 'info' } | null>(null);
   
-  // Company form state
+  // Estado do formulário da empresa
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [cnpj, setCnpj] = useState('');
   const [description, setDescription] = useState('');
   
-  // Address form state
+  // Estado do formulário do endereço
   const [street, setStreet] = useState('');
   const [number, setNumber] = useState('');
   const [complement, setComplement] = useState('');
@@ -38,7 +38,7 @@ export default function EditCompanyPage() {
   const [state, setState] = useState('');
   const [zipCode, setZipCode] = useState('');
 
-  // Load company data
+  // Carrega dados da empresa
   useEffect(() => {
     if (!token || !companyId) return;
     
@@ -46,7 +46,7 @@ export default function EditCompanyPage() {
     getCompanyDetails(companyId, token)
       .then((data) => {
         setCompany(data);
-        // Populate form fields
+        // Preenche campos do formulário
         setName(data.name || '');
         setEmail(data.email || '');
         setPhone(data.phone ? formatPhone(data.phone) : '');
@@ -98,7 +98,7 @@ export default function EditCompanyPage() {
       await updateCompany(company.id, updateData, token);
       setToast({ message: 'Empresa atualizada com sucesso!', kind: 'success' });
       
-      // Redirect to company details after success
+      // Redireciona para detalhes da empresa após sucesso
       setTimeout(() => router.push(`/super-admin/companies/${company.id}`), 1500);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao atualizar empresa.';

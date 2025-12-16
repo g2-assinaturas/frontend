@@ -7,98 +7,24 @@ import { getCompanyDetails, toggleCompanyStatus, deleteCompany } from '@/lib/api
 import { useRequireSuperAdmin } from '@/lib/use-require-super-admin';
 import { Toast } from '@/components/toast';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { DeleteModal } from '@/components/delete-modal';
 import type { CompanyDetails } from '@/lib/types';
+import { formatCurrency, formatDate, formatPhone, formatCnpj } from '@/lib/formatters';
 
 /**
- * Format date to localized string
+ * Formata telefone com fallback para valores nulos
  */
-function formatDate(dateString: string | null | undefined): string {
-  if (!dateString) return '-';
-  return new Date(dateString).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  });
-}
-
-/**
- * Format currency value in BRL
- */
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(value / 100);
-}
-
-/**
- * Format phone number
- */
-function formatPhone(value: string | null): string {
+function formatPhoneDisplay(value: string | null): string {
   if (!value) return '-';
-  const digits = value.replace(/\D/g, '');
-  if (digits.length === 11) {
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
-  }
-  if (digits.length === 10) {
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
-  }
-  return value;
+  return formatPhone(value);
 }
 
 /**
- * Format CNPJ
+ * Formata CNPJ com fallback para valores nulos
  */
-function formatCnpj(value: string | null): string {
+function formatCnpjDisplay(value: string | null): string {
   if (!value) return '-';
-  const digits = value.replace(/\D/g, '');
-  if (digits.length === 14) {
-    return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8, 12)}-${digits.slice(12)}`;
-  }
-  return value;
-}
-
-/**
- * Delete confirmation modal
- */
-function DeleteModal({
-  companyName,
-  onConfirm,
-  onCancel,
-  loading,
-}: {
-  companyName: string;
-  onConfirm: () => void;
-  onCancel: () => void;
-  loading: boolean;
-}) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-800">
-        <h3 className="text-lg font-semibold text-ink-900 dark:text-white">Confirmar eliminação</h3>
-        <p className="mt-2 text-sm text-ink-600 dark:text-slate-300">
-          Tem a certeza que deseja eliminar permanentemente a empresa <strong>{companyName}</strong>? 
-          Esta ação não pode ser desfeita e todos os dados serão perdidos.
-        </p>
-        <div className="mt-6 flex gap-3 justify-end">
-          <button
-            onClick={onCancel}
-            disabled={loading}
-            className="rounded-xl border border-ink-200 px-4 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={onConfirm}
-            disabled={loading}
-            className="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
-          >
-            {loading ? 'A eliminar...' : 'Eliminar'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+  return formatCnpj(value);
 }
 
 export default function CompanyDetailsPage() {
@@ -206,7 +132,7 @@ export default function CompanyDetailsPage() {
                 {company.isActive ? 'Ativa' : 'Inativa'}
               </span>
             </div>
-            <p className="mt-1 text-sm text-ink-500 dark:text-slate-400">Criada em {formatDate(company.createdAt)}</p>
+            <p className="mt-1 text-sm text-ink-500 dark:text-slate-400">Criada em {formatDate(company.createdAt, 'long')}</p>
           </div>
           
           <div className="flex gap-3">
@@ -245,11 +171,11 @@ export default function CompanyDetailsPage() {
               </div>
               <div>
                 <dt className="text-sm font-medium text-ink-500 dark:text-slate-400">Telefone</dt>
-                <dd className="mt-1 text-sm text-ink-900 dark:text-slate-200">{formatPhone(company.phone)}</dd>
+                <dd className="mt-1 text-sm text-ink-900 dark:text-slate-200">{formatPhoneDisplay(company.phone)}</dd>
               </div>
               <div>
                 <dt className="text-sm font-medium text-ink-500 dark:text-slate-400">CNPJ</dt>
-                <dd className="mt-1 text-sm text-ink-900 dark:text-slate-200">{formatCnpj(company.cnpj)}</dd>
+                <dd className="mt-1 text-sm text-ink-900 dark:text-slate-200">{formatCnpjDisplay(company.cnpj)}</dd>
               </div>
               <div>
                 <dt className="text-sm font-medium text-ink-500 dark:text-slate-400">Slug</dt>
@@ -400,7 +326,7 @@ export default function CompanyDetailsPage() {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <DeleteModal
-          companyName={company.name}
+          itemName={company.name}
           onConfirm={handleDelete}
           onCancel={() => setShowDeleteModal(false)}
           loading={deleting}
