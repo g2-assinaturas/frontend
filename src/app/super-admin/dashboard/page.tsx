@@ -6,6 +6,7 @@ import { listCompanies, toggleCompanyStatus, getDashboardMetrics, deleteCompany 
 import { useRequireSuperAdmin } from '@/lib/use-require-super-admin';
 import type { CompanySummary, DashboardMetrics } from '@/lib/types';
 import { Toast } from '@/components/toast';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 /**
  * Format currency value in BRL
@@ -47,19 +48,19 @@ function MetricCard({
   color?: 'blue' | 'green' | 'purple' | 'orange';
 }) {
   const colorClasses = {
-    blue: 'bg-blue-50 text-blue-600',
-    green: 'bg-emerald-50 text-emerald-600',
-    purple: 'bg-purple-50 text-purple-600',
-    orange: 'bg-orange-50 text-orange-600',
+    blue: 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+    green: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
+    purple: 'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
+    orange: 'bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400',
   };
 
   return (
-    <div className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card">
+    <div className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card dark:border-slate-700 dark:bg-slate-800">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-medium text-ink-500">{title}</p>
-          <p className="mt-2 text-3xl font-bold text-ink-900">{value}</p>
-          {subtitle && <p className="mt-1 text-sm text-ink-500">{subtitle}</p>}
+          <p className="text-sm font-medium text-ink-500 dark:text-slate-400">{title}</p>
+          <p className="mt-2 text-3xl font-bold text-ink-900 dark:text-white">{value}</p>
+          {subtitle && <p className="mt-1 text-sm text-ink-500 dark:text-slate-400">{subtitle}</p>}
         </div>
         <div className={`rounded-xl p-3 ${colorClasses[color]}`}>
           {icon}
@@ -85,9 +86,9 @@ function DeleteModal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-        <h3 className="text-lg font-semibold text-ink-900">Confirmar eliminação</h3>
-        <p className="mt-2 text-sm text-ink-600">
+      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-800">
+        <h3 className="text-lg font-semibold text-ink-900 dark:text-white">Confirmar eliminação</h3>
+        <p className="mt-2 text-sm text-ink-600 dark:text-slate-300">
           Tem a certeza que deseja eliminar permanentemente a empresa <strong>{companyName}</strong>? 
           Esta ação não pode ser desfeita e todos os dados serão perdidos.
         </p>
@@ -95,7 +96,7 @@ function DeleteModal({
           <button
             onClick={onCancel}
             disabled={loading}
-            className="rounded-xl border border-ink-200 px-4 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50"
+            className="rounded-xl border border-ink-200 px-4 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
           >
             Cancelar
           </button>
@@ -174,17 +175,18 @@ export default function SuperAdminDashboardPage() {
       {/* Header */}
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-ink-500">Super Admin</p>
-          <h1 className="text-3xl font-semibold text-ink-900">Dashboard</h1>
-          <p className="text-sm text-ink-600">Bem-vindo, {user?.name ?? user?.email ?? '—'}</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-ink-500 dark:text-slate-400">Super Admin</p>
+          <h1 className="text-3xl font-semibold text-ink-900 dark:text-white">Dashboard</h1>
+          <p className="text-sm text-ink-600 dark:text-slate-300">Bem-vindo, {user?.name ?? user?.email ?? '—'}</p>
         </div>
-        <div className="flex gap-3 text-sm font-semibold">
-          <Link className="rounded-full border border-ink-200 px-4 py-2 text-ink-900 hover:bg-ink-50" href="/">
+        <div className="flex items-center gap-3 text-sm font-semibold">
+          <ThemeToggle />
+          <Link className="rounded-full border border-ink-200 px-4 py-2 text-ink-900 hover:bg-ink-50 dark:border-slate-600 dark:text-slate-100 dark:hover:bg-slate-700" href="/">
             Landing
           </Link>
           <button
             onClick={logout}
-            className="rounded-full bg-ink-900 px-4 py-2 text-ink-50 shadow-card transition hover:-translate-y-0.5 hover:shadow-lg"
+            className="rounded-full bg-ink-900 px-4 py-2 text-ink-50 shadow-card transition hover:-translate-y-0.5 hover:shadow-lg dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
           >
             Sair
           </button>
@@ -195,7 +197,7 @@ export default function SuperAdminDashboardPage() {
       {authLoading || loading ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-32 animate-pulse rounded-2xl bg-ink-100" />
+            <div key={i} className="h-32 animate-pulse rounded-2xl bg-ink-100 dark:bg-slate-700" />
           ))}
         </div>
       ) : metrics && metrics.companies && metrics.subscriptions && metrics.revenue ? (
@@ -251,58 +253,58 @@ export default function SuperAdminDashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Link
           href="/super-admin/subscriptions"
-          className="flex items-center gap-4 rounded-2xl border border-ink-200 bg-white p-4 shadow-card transition hover:border-emerald-300 hover:shadow-lg"
+          className="flex items-center gap-4 rounded-2xl border border-ink-200 bg-white p-4 shadow-card transition hover:border-emerald-300 hover:shadow-lg dark:border-slate-700 dark:bg-slate-800 dark:hover:border-emerald-500"
         >
-          <div className="rounded-xl bg-emerald-50 p-3 text-emerald-600">
+          <div className="rounded-xl bg-emerald-50 p-3 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
             </svg>
           </div>
           <div>
-            <p className="font-semibold text-ink-900">Assinaturas</p>
-            <p className="text-sm text-ink-500">Gerir todas as assinaturas</p>
+            <p className="font-semibold text-ink-900 dark:text-white">Assinaturas</p>
+            <p className="text-sm text-ink-500 dark:text-slate-400">Gerir todas as assinaturas</p>
           </div>
         </Link>
         <Link
           href="/super-admin/invoices"
-          className="flex items-center gap-4 rounded-2xl border border-ink-200 bg-white p-4 shadow-card transition hover:border-blue-300 hover:shadow-lg"
+          className="flex items-center gap-4 rounded-2xl border border-ink-200 bg-white p-4 shadow-card transition hover:border-blue-300 hover:shadow-lg dark:border-slate-700 dark:bg-slate-800 dark:hover:border-blue-500"
         >
-          <div className="rounded-xl bg-blue-50 p-3 text-blue-600">
+          <div className="rounded-xl bg-blue-50 p-3 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
           <div>
-            <p className="font-semibold text-ink-900">Faturas</p>
-            <p className="text-sm text-ink-500">Histórico de faturação</p>
+            <p className="font-semibold text-ink-900 dark:text-white">Faturas</p>
+            <p className="text-sm text-ink-500 dark:text-slate-400">Histórico de faturação</p>
           </div>
         </Link>
         <Link
           href="/super-admin/reports"
-          className="flex items-center gap-4 rounded-2xl border border-ink-200 bg-white p-4 shadow-card transition hover:border-purple-300 hover:shadow-lg"
+          className="flex items-center gap-4 rounded-2xl border border-ink-200 bg-white p-4 shadow-card transition hover:border-purple-300 hover:shadow-lg dark:border-slate-700 dark:bg-slate-800 dark:hover:border-purple-500"
         >
-          <div className="rounded-xl bg-purple-50 p-3 text-purple-600">
+          <div className="rounded-xl bg-purple-50 p-3 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
           </div>
           <div>
-            <p className="font-semibold text-ink-900">Relatórios</p>
-            <p className="text-sm text-ink-500">Métricas e análises</p>
+            <p className="font-semibold text-ink-900 dark:text-white">Relatórios</p>
+            <p className="text-sm text-ink-500 dark:text-slate-400">Métricas e análises</p>
           </div>
         </Link>
         <Link
           href="/super-admin/companies/new"
-          className="flex items-center gap-4 rounded-2xl border border-ink-200 bg-white p-4 shadow-card transition hover:border-orange-300 hover:shadow-lg"
+          className="flex items-center gap-4 rounded-2xl border border-ink-200 bg-white p-4 shadow-card transition hover:border-orange-300 hover:shadow-lg dark:border-slate-700 dark:bg-slate-800 dark:hover:border-orange-500"
         >
-          <div className="rounded-xl bg-orange-50 p-3 text-orange-600">
+          <div className="rounded-xl bg-orange-50 p-3 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
           </div>
           <div>
-            <p className="font-semibold text-ink-900">Nova Empresa</p>
-            <p className="text-sm text-ink-500">Adicionar empresa</p>
+            <p className="font-semibold text-ink-900 dark:text-white">Nova Empresa</p>
+            <p className="text-sm text-ink-500 dark:text-slate-400">Adicionar empresa</p>
           </div>
         </Link>
       </div>
@@ -311,28 +313,28 @@ export default function SuperAdminDashboardPage() {
       {metrics && metrics.recent && metrics.recent.companies && metrics.recent.subscriptions && (
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Recent Companies */}
-          <div className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card">
+          <div className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card dark:border-slate-700 dark:bg-slate-800">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-ink-900">Empresas Recentes</h2>
-              <Link href="/super-admin/companies/new" className="text-sm font-semibold text-blue-600 hover:underline">
+              <h2 className="text-lg font-semibold text-ink-900 dark:text-white">Empresas Recentes</h2>
+              <Link href="/super-admin/companies/new" className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400">
                 + Nova Empresa
               </Link>
             </div>
             <div className="space-y-3">
               {metrics.recent.companies.length === 0 ? (
-                <p className="text-sm text-ink-500">Nenhuma empresa registada.</p>
+                <p className="text-sm text-ink-500 dark:text-slate-400">Nenhuma empresa registada.</p>
               ) : (
                 metrics.recent.companies.map((company) => (
                   <Link
                     key={company.id}
                     href={`/super-admin/companies/${company.id}`}
-                    className="flex items-center justify-between p-3 rounded-xl hover:bg-ink-50 transition"
+                    className="flex items-center justify-between p-3 rounded-xl hover:bg-ink-50 transition dark:hover:bg-slate-700"
                   >
                     <div>
-                      <p className="font-medium text-ink-900">{company.name}</p>
-                      <p className="text-xs text-ink-500">{formatDate(company.createdAt)}</p>
+                      <p className="font-medium text-ink-900 dark:text-white">{company.name}</p>
+                      <p className="text-xs text-ink-500 dark:text-slate-400">{formatDate(company.createdAt)}</p>
                     </div>
-                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${company.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${company.isActive ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
                       {company.isActive ? 'Ativa' : 'Inativa'}
                     </span>
                   </Link>
@@ -342,26 +344,26 @@ export default function SuperAdminDashboardPage() {
           </div>
 
           {/* Recent Subscriptions */}
-          <div className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card">
-            <h2 className="text-lg font-semibold text-ink-900 mb-4">Assinaturas Recentes</h2>
+          <div className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card dark:border-slate-700 dark:bg-slate-800">
+            <h2 className="text-lg font-semibold text-ink-900 mb-4 dark:text-white">Assinaturas Recentes</h2>
             <div className="space-y-3">
               {metrics.recent.subscriptions.length === 0 ? (
-                <p className="text-sm text-ink-500">Nenhuma assinatura registada.</p>
+                <p className="text-sm text-ink-500 dark:text-slate-400">Nenhuma assinatura registada.</p>
               ) : (
                 metrics.recent.subscriptions.map((sub) => (
                   <div
                     key={sub.id}
-                    className="flex items-center justify-between p-3 rounded-xl bg-ink-50"
+                    className="flex items-center justify-between p-3 rounded-xl bg-ink-50 dark:bg-slate-700/50"
                   >
                     <div>
-                      <p className="font-medium text-ink-900">{sub.company.name}</p>
-                      <p className="text-xs text-ink-500">{sub.plan.name} · {formatDate(sub.createdAt)}</p>
+                      <p className="font-medium text-ink-900 dark:text-white">{sub.company.name}</p>
+                      <p className="text-xs text-ink-500 dark:text-slate-400">{sub.plan.name} · {formatDate(sub.createdAt)}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-ink-900">{formatCurrency(sub.plan.price)}</p>
+                      <p className="font-semibold text-ink-900 dark:text-white">{formatCurrency(sub.plan.price)}</p>
                       <span className={`text-xs font-medium ${
-                        sub.status === 'ACTIVE' ? 'text-emerald-600' : 
-                        sub.status === 'TRIALING' ? 'text-blue-600' : 'text-ink-500'
+                        sub.status === 'ACTIVE' ? 'text-emerald-600 dark:text-emerald-400' : 
+                        sub.status === 'TRIALING' ? 'text-blue-600 dark:text-blue-400' : 'text-ink-500 dark:text-slate-400'
                       }`}>
                         {sub.status}
                       </span>
@@ -377,19 +379,19 @@ export default function SuperAdminDashboardPage() {
       {/* Companies Table */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-ink-900">Todas as Empresas</h2>
+          <h2 className="text-xl font-semibold text-ink-900 dark:text-white">Todas as Empresas</h2>
           <Link
             href="/super-admin/companies/new"
-            className="rounded-xl bg-ink-900 px-4 py-2 text-sm font-semibold text-white shadow-card transition hover:-translate-y-0.5 hover:shadow-lg"
+            className="rounded-xl bg-ink-900 px-4 py-2 text-sm font-semibold text-white shadow-card transition hover:-translate-y-0.5 hover:shadow-lg dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
           >
             + Nova Empresa
           </Link>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-card">
+        <div className="overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-card dark:border-slate-700 dark:bg-slate-800">
           <div className="overflow-x-auto">
             <div className="min-w-[900px]">
-              <div className="grid grid-cols-7 gap-2 border-b border-ink-100 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ink-500">
+              <div className="grid grid-cols-7 gap-2 border-b border-ink-100 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ink-500 dark:border-slate-700 dark:text-slate-400">
                 <span>Nome</span>
                 <span>Email</span>
                 <span>Telefone</span>
@@ -399,47 +401,47 @@ export default function SuperAdminDashboardPage() {
                 <span>Ações</span>
               </div>
               {loading ? (
-                <div className="px-4 py-8 text-center text-ink-500">A carregar empresas...</div>
+                <div className="px-4 py-8 text-center text-ink-500 dark:text-slate-400">A carregar empresas...</div>
               ) : companies.length === 0 ? (
-                <p className="px-4 py-6 text-sm text-ink-700">Nenhuma empresa encontrada.</p>
+                <p className="px-4 py-6 text-sm text-ink-700 dark:text-slate-300">Nenhuma empresa encontrada.</p>
               ) : (
                 companies.map((company) => (
-                  <div key={company.id} className="grid grid-cols-7 items-center gap-2 border-b border-ink-50 px-4 py-3 text-sm text-ink-700 last:border-b-0 hover:bg-ink-50">
+                  <div key={company.id} className="grid grid-cols-7 items-center gap-2 border-b border-ink-50 px-4 py-3 text-sm text-ink-700 last:border-b-0 hover:bg-ink-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700/50">
                     <div>
-                      <Link href={`/super-admin/companies/${company.id}`} className="font-semibold text-ink-900 hover:text-blue-600">
+                      <Link href={`/super-admin/companies/${company.id}`} className="font-semibold text-ink-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400">
                         {company.name}
                       </Link>
-                      <p className="text-xs text-ink-500">{company.address?.city ?? '-'}</p>
+                      <p className="text-xs text-ink-500 dark:text-slate-400">{company.address?.city ?? '-'}</p>
                     </div>
                     <span className="truncate">{company.email ?? '-'}</span>
                     <span>{company.phone ?? '-'}</span>
                     <span>{company.customersCount ?? 0}</span>
                     <span>{company.subscriptionsCount ?? 0}</span>
-                    <span className={company.isActive ? 'text-emerald-700' : 'text-red-600'}>
+                    <span className={company.isActive ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}>
                       {company.isActive ? 'Ativa' : 'Inativa'}
                     </span>
                     <div className="flex gap-2">
                       <Link
                         href={`/super-admin/companies/${company.id}`}
-                        className="rounded-lg border border-ink-200 px-3 py-1.5 text-xs font-semibold text-ink-700 hover:bg-ink-100"
+                        className="rounded-lg border border-ink-200 px-3 py-1.5 text-xs font-semibold text-ink-700 hover:bg-ink-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-600"
                       >
                         Ver
                       </Link>
                       <Link
                         href={`/super-admin/companies/${company.id}/edit`}
-                        className="rounded-lg border border-ink-200 px-3 py-1.5 text-xs font-semibold text-ink-700 hover:bg-ink-100"
+                        className="rounded-lg border border-ink-200 px-3 py-1.5 text-xs font-semibold text-ink-700 hover:bg-ink-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-600"
                       >
                         Editar
                       </Link>
                       <button
                         onClick={() => handleToggle(company.id)}
-                        className="rounded-lg border border-ink-200 px-3 py-1.5 text-xs font-semibold text-ink-700 hover:bg-ink-100"
+                        className="rounded-lg border border-ink-200 px-3 py-1.5 text-xs font-semibold text-ink-700 hover:bg-ink-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-600"
                       >
                         {company.isActive ? 'Desativar' : 'Ativar'}
                       </button>
                       <button
                         onClick={() => setDeleteModal({ id: company.id, name: company.name })}
-                        className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50"
+                        className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/30"
                       >
                         Eliminar
                       </button>

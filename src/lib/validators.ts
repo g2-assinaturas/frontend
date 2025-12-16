@@ -20,7 +20,7 @@ export const CompanySchema = z.object({
     .refine((v) => !v || [11, 14].includes(onlyDigits(v).length), {
       message: 'CPF ou CNPJ deve ter 11 ou 14 dígitos',
     }),
-  description: z.string().optional(),
+  description: z.string().optional().or(z.literal('')),
 });
 
 export const AddressSchema = z.object({

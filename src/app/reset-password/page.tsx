@@ -4,6 +4,7 @@ import { FormEvent, useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Toast } from '@/components/toast';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { resetPassword } from '@/lib/api';
 import { ResetPasswordSchema } from '@/lib/validators';
 
@@ -71,22 +72,25 @@ function ResetPasswordPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-ink-50 px-6 py-12">
-      <div className="w-full max-w-md rounded-3xl border border-ink-100 bg-white p-8 shadow-card">
+    <main className="flex min-h-screen items-center justify-center bg-ink-50 px-6 py-12 dark:bg-slate-900">
+      <div className="absolute right-6 top-6">
+        <ThemeToggle />
+      </div>
+      <div className="w-full max-w-md rounded-3xl border border-ink-100 bg-white p-8 shadow-card dark:border-slate-700 dark:bg-slate-800">
         <div className="mb-6 space-y-2 text-center">
-          <p className="text-sm font-semibold uppercase tracking-wide text-ink-500">SaaS Control</p>
-          <h1 className="text-2xl font-semibold text-ink-900">Redefinir palavra-passe</h1>
-          <p className="text-sm text-ink-600">Introduza a sua nova palavra-passe.</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-ink-500 dark:text-slate-400">SaaS Control</p>
+          <h1 className="text-2xl font-semibold text-ink-900 dark:text-white">Redefinir palavra-passe</h1>
+          <p className="text-sm text-ink-600 dark:text-slate-300">Introduza a sua nova palavra-passe.</p>
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-ink-800" htmlFor="newPassword">
+            <label className="text-sm font-medium text-ink-800 dark:text-slate-200" htmlFor="newPassword">
               Nova palavra-passe
             </label>
             <input
               id="newPassword"
-              className="w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-ink-900 outline-none ring-0 transition focus:border-ink-400"
+              className="w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-ink-900 outline-none ring-0 transition focus:border-ink-400 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:border-slate-500"
               placeholder="Mínimo 8 caracteres"
               type="password"
               value={newPassword}
@@ -97,19 +101,19 @@ function ResetPasswordPage() {
               aria-describedby="password-requirements password-error"
               aria-invalid={!!errors.newPassword}
             />
-            {errors.newPassword && <p id="password-error" className="text-sm text-red-600" role="alert">{errors.newPassword}</p>}
-            <p id="password-requirements" className="text-xs text-ink-500">
+            {errors.newPassword && <p id="password-error" className="text-sm text-red-600 dark:text-red-400" role="alert">{errors.newPassword}</p>}
+            <p id="password-requirements" className="text-xs text-ink-500 dark:text-slate-400">
               Deve conter maiúscula, minúscula, número e símbolo.
             </p>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-ink-800" htmlFor="confirmNewPassword">
+            <label className="text-sm font-medium text-ink-800 dark:text-slate-200" htmlFor="confirmNewPassword">
               Confirmar palavra-passe
             </label>
             <input
               id="confirmNewPassword"
-              className="w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-ink-900 outline-none ring-0 transition focus:border-ink-400"
+              className="w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-ink-900 outline-none ring-0 transition focus:border-ink-400 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:border-slate-500"
               placeholder="Repita a palavra-passe"
               type="password"
               value={confirmNewPassword}
@@ -120,23 +124,23 @@ function ResetPasswordPage() {
               aria-describedby="confirm-password-error"
               aria-invalid={!!errors.confirmNewPassword}
             />
-            {errors.confirmNewPassword && <p id="confirm-password-error" className="text-sm text-red-600" role="alert">{errors.confirmNewPassword}</p>}
+            {errors.confirmNewPassword && <p id="confirm-password-error" className="text-sm text-red-600 dark:text-red-400" role="alert">{errors.confirmNewPassword}</p>}
           </div>
 
           <button
             type="submit"
             disabled={loading || !token}
-            className="flex w-full items-center justify-center rounded-xl bg-ink-900 px-4 py-3 text-sm font-semibold text-ink-50 shadow-card transition hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
+            className="flex w-full items-center justify-center rounded-xl bg-ink-900 px-4 py-3 text-sm font-semibold text-ink-50 shadow-card transition hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70 dark:bg-slate-600 dark:hover:bg-slate-500"
           >
             {loading ? 'A redefinir...' : 'Redefinir palavra-passe'}
           </button>
 
-          <p className="text-center text-sm text-ink-600">
-            <Link className="font-semibold text-ink-900 hover:underline" href="/forgot-password">
+          <p className="text-center text-sm text-ink-600 dark:text-slate-300">
+            <Link className="font-semibold text-ink-900 hover:underline dark:text-white" href="/forgot-password">
               Solicitar novo link
             </Link>
             {' · '}
-            <Link className="font-semibold text-ink-900 hover:underline" href="/login">
+            <Link className="font-semibold text-ink-900 hover:underline dark:text-white" href="/login">
               Voltar ao login
             </Link>
           </p>

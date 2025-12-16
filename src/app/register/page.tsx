@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { MultiStepForm } from '@/components/forms/MultiStepForm';
 import { CompanyStep } from '@/components/forms/CompanyStep';
 import { AddressStep } from '@/components/forms/AddressStep';
 import { UserStep } from '@/components/forms/UserStep';
 import { Toast } from '@/components/toast';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { type AddressInput, type CompanyInput, type RegisterInput, type UserInput, RegisterSchema } from '@/lib/validators';
 import { registerCompany } from '@/lib/api';
 
@@ -58,18 +60,29 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="min-h-screen bg-ink-50 px-6 py-12">
+    <main className="min-h-screen bg-ink-50 px-6 py-12 dark:bg-slate-900">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-        <header className="flex flex-col gap-2">
-          <p className="text-sm font-semibold uppercase tracking-wide text-ink-500">SaaS Control</p>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h1 className="text-3xl font-semibold text-ink-900">Registe a sua empresa em 3 passos</h1>
-            <div className="flex items-center gap-2 text-sm font-medium text-ink-700">
-              <span className="rounded-full bg-white px-3 py-1 shadow-card">Passo {currentStep + 1} de 3</span>
-              <span className="rounded-full border border-ink-200 px-3 py-1 text-ink-800">{stepTitles[currentStep]}</span>
+        <header className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-semibold uppercase tracking-wide text-ink-500 dark:text-slate-400">SaaS Control</p>
+            <div className="flex items-center gap-3">
+              <Link 
+                href="/" 
+                className="text-sm font-semibold text-ink-700 hover:text-ink-900 dark:text-slate-300 dark:hover:text-white"
+              >
+                ← Voltar à página inicial
+              </Link>
+              <ThemeToggle />
             </div>
           </div>
-          <p className="text-sm text-ink-600">Preencha os dados da empresa, endereço via CEP e o utilizador responsável com palavra-passe segura.</p>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h1 className="text-3xl font-semibold text-ink-900 dark:text-white">Registe a sua empresa em 3 passos</h1>
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <span className="rounded-full bg-white px-3 py-1 shadow-card dark:bg-slate-800 dark:text-slate-300">Passo {currentStep + 1} de 3</span>
+              <span className="rounded-full border border-ink-200 px-3 py-1 text-ink-800 dark:border-slate-600 dark:text-slate-300">{stepTitles[currentStep]}</span>
+            </div>
+          </div>
+          <p className="text-sm text-ink-600 dark:text-slate-300">Preencha os dados da empresa, endereço via CEP e o utilizador responsável com palavra-passe segura.</p>
         </header>
 
         <MultiStepForm onSubmit={handleSubmit} isSubmitting={isSubmitting} canProceed={canProceed} onStepChange={setCurrentStep}>

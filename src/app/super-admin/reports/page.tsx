@@ -6,9 +6,10 @@ import { getRevenueReport, getChurnReport } from '@/lib/api';
 import { useRequireSuperAdmin } from '@/lib/use-require-super-admin';
 import type { RevenueReport, ChurnReport } from '@/lib/types';
 import { Toast } from '@/components/toast';
+import { ThemeToggle } from '@/components/theme-toggle';
 
-function formatCurrency(value: number, currency: string = 'EUR'): string {
-  return new Intl.NumberFormat('pt-PT', {
+function formatCurrency(value: number, currency: string = 'BRL'): string {
+  return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: currency,
   }).format(value / 100);
@@ -16,7 +17,7 @@ function formatCurrency(value: number, currency: string = 'EUR'): string {
 
 function formatDate(dateString: string | null | undefined): string {
   if (!dateString) return '-';
-  return new Date(dateString).toLocaleDateString('pt-PT', {
+  return new Date(dateString).toLocaleDateString('pt-BR', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
@@ -37,20 +38,20 @@ function MetricCard({
   color?: 'blue' | 'green' | 'purple' | 'orange' | 'red';
 }) {
   const colorClasses = {
-    blue: 'bg-blue-50 text-blue-600',
-    green: 'bg-emerald-50 text-emerald-600',
-    purple: 'bg-purple-50 text-purple-600',
-    orange: 'bg-orange-50 text-orange-600',
-    red: 'bg-red-50 text-red-600',
+    blue: 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+    green: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
+    purple: 'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
+    orange: 'bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400',
+    red: 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400',
   };
 
   return (
-    <div className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card">
+    <div className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card dark:border-slate-700 dark:bg-slate-800">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-medium text-ink-500">{title}</p>
-          <p className="mt-2 text-3xl font-bold text-ink-900">{value}</p>
-          {subtitle && <p className="mt-1 text-sm text-ink-500">{subtitle}</p>}
+          <p className="text-sm font-medium text-ink-500 dark:text-slate-400">{title}</p>
+          <p className="mt-2 text-3xl font-bold text-ink-900 dark:text-white">{value}</p>
+          {subtitle && <p className="mt-1 text-sm text-ink-500 dark:text-slate-400">{subtitle}</p>}
         </div>
         <div className={`rounded-xl p-3 ${colorClasses[color]}`}>
           {icon}
@@ -152,48 +153,49 @@ export default function ReportsPage() {
       {/* Header */}
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-ink-500">Super Admin</p>
-          <h1 className="text-3xl font-semibold text-ink-900">Relatórios</h1>
-          <p className="text-sm text-ink-600">Métricas e análises do negócio</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-ink-500 dark:text-slate-400">Super Admin</p>
+          <h1 className="text-3xl font-semibold text-ink-900 dark:text-white">Relatórios</h1>
+          <p className="text-sm text-ink-600 dark:text-slate-300">Métricas e análises do negócio</p>
         </div>
-        <div className="flex gap-3 text-sm font-semibold">
-          <Link className="rounded-full border border-ink-200 px-4 py-2 text-ink-900 hover:bg-ink-50" href="/super-admin/dashboard">
+        <div className="flex items-center gap-3 text-sm font-semibold">
+          <ThemeToggle />
+          <Link className="rounded-full border border-ink-200 px-4 py-2 text-ink-900 hover:bg-ink-50 dark:border-slate-600 dark:text-slate-100 dark:hover:bg-slate-700" href="/super-admin/dashboard">
             ← Dashboard
           </Link>
         </div>
       </header>
 
       {authLoading || loading ? (
-        <p className="text-ink-700">A carregar relatórios...</p>
+        <p className="text-ink-700 dark:text-slate-300">A carregar relatórios...</p>
       ) : (
         <>
           {/* Revenue Section */}
           <section>
             <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <h2 className="text-xl font-semibold text-ink-900">Receita</h2>
+              <h2 className="text-xl font-semibold text-ink-900 dark:text-white">Receita</h2>
               <div className="flex flex-wrap items-end gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-ink-500 mb-1">Data Início</label>
+                  <label className="block text-xs font-medium text-ink-500 mb-1 dark:text-slate-400">Data Início</label>
                   <input
                     type="date"
                     value={dateRange.startDate}
                     onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))}
-                    className="rounded-lg border border-ink-200 px-3 py-2 text-sm"
+                    className="rounded-lg border border-ink-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-ink-500 mb-1">Data Fim</label>
+                  <label className="block text-xs font-medium text-ink-500 mb-1 dark:text-slate-400">Data Fim</label>
                   <input
                     type="date"
                     value={dateRange.endDate}
                     onChange={(e) => setDateRange(prev => ({ ...prev, endDate: e.target.value }))}
-                    className="rounded-lg border border-ink-200 px-3 py-2 text-sm"
+                    className="rounded-lg border border-ink-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
                   />
                 </div>
                 <button
                   onClick={handleFilterRevenue}
                   disabled={filteringRevenue}
-                  className="rounded-lg bg-ink-900 px-4 py-2 text-sm font-semibold text-white hover:bg-ink-800 disabled:opacity-50"
+                  className="rounded-lg bg-ink-900 px-4 py-2 text-sm font-semibold text-white hover:bg-ink-800 disabled:opacity-50 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
                 >
                   {filteringRevenue ? 'A filtrar...' : 'Filtrar'}
                 </button>
@@ -228,21 +230,21 @@ export default function ReportsPage() {
 
             {/* Revenue Details Table */}
             {revenueReport && revenueReport.invoices.length > 0 && (
-              <div className="mt-6 overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-card">
-                <div className="border-b border-ink-100 px-4 py-3">
-                  <h3 className="text-sm font-semibold text-ink-900">Detalhes das Faturas Pagas</h3>
+              <div className="mt-6 overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-card dark:border-slate-700 dark:bg-slate-800">
+                <div className="border-b border-ink-100 px-4 py-3 dark:border-slate-700">
+                  <h3 className="text-sm font-semibold text-ink-900 dark:text-white">Detalhes das Faturas Pagas</h3>
                 </div>
                 <div className="overflow-x-auto">
                   <div className="min-w-[600px]">
-                    <div className="grid grid-cols-4 gap-2 border-b border-ink-100 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ink-500">
+                    <div className="grid grid-cols-4 gap-2 border-b border-ink-100 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ink-500 dark:border-slate-700 dark:text-slate-400">
                       <span>Empresa</span>
                       <span>Plano</span>
                       <span>Valor</span>
                       <span>Data Pagamento</span>
                     </div>
                     {revenueReport.invoices.slice(0, 20).map((invoice) => (
-                      <div key={invoice.id} className="grid grid-cols-4 gap-2 border-b border-ink-50 px-4 py-3 text-sm text-ink-700 last:border-b-0">
-                        <span className="font-medium text-ink-900">{invoice.company?.name ?? '-'}</span>
+                      <div key={invoice.id} className="grid grid-cols-4 gap-2 border-b border-ink-50 px-4 py-3 text-sm text-ink-700 last:border-b-0 dark:border-slate-700 dark:text-slate-300">
+                        <span className="font-medium text-ink-900 dark:text-white">{invoice.company?.name ?? '-'}</span>
                         <span>{invoice.subscription?.plan?.name ?? '-'}</span>
                         <span className="font-semibold">{formatCurrency(invoice.amount, invoice.currency)}</span>
                         <span>{formatDate(invoice.paidAt)}</span>
@@ -257,9 +259,9 @@ export default function ReportsPage() {
           {/* Churn Section */}
           <section className="mt-8">
             <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <h2 className="text-xl font-semibold text-ink-900">Churn</h2>
+              <h2 className="text-xl font-semibold text-ink-900 dark:text-white">Churn</h2>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-ink-600">Período:</span>
+                <span className="text-sm text-ink-600 dark:text-slate-400">Período:</span>
                 {[1, 3, 6, 12].map((months) => (
                   <button
                     key={months}
@@ -267,8 +269,8 @@ export default function ReportsPage() {
                     disabled={filteringChurn}
                     className={`rounded-lg px-3 py-1 text-sm font-medium transition ${
                       churnPeriod === months
-                        ? 'bg-ink-900 text-white'
-                        : 'bg-ink-100 text-ink-700 hover:bg-ink-200'
+                        ? 'bg-ink-900 text-white dark:bg-slate-100 dark:text-slate-900'
+                        : 'bg-ink-100 text-ink-700 hover:bg-ink-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600'
                     } disabled:opacity-50`}
                   >
                     {months}m
@@ -312,20 +314,20 @@ export default function ReportsPage() {
 
             {/* Canceled Subscriptions Table */}
             {churnReport && churnReport.canceledSubscriptions.length > 0 && (
-              <div className="mt-6 overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-card">
-                <div className="border-b border-ink-100 px-4 py-3">
-                  <h3 className="text-sm font-semibold text-ink-900">Assinaturas Canceladas</h3>
+              <div className="mt-6 overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-card dark:border-slate-700 dark:bg-slate-800">
+                <div className="border-b border-ink-100 px-4 py-3 dark:border-slate-700">
+                  <h3 className="text-sm font-semibold text-ink-900 dark:text-white">Assinaturas Canceladas</h3>
                 </div>
                 <div className="overflow-x-auto">
                   <div className="min-w-[500px]">
-                    <div className="grid grid-cols-3 gap-2 border-b border-ink-100 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ink-500">
+                    <div className="grid grid-cols-3 gap-2 border-b border-ink-100 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ink-500 dark:border-slate-700 dark:text-slate-400">
                       <span>Empresa</span>
                       <span>Plano</span>
                       <span>Data Cancelamento</span>
                     </div>
                     {churnReport.canceledSubscriptions.slice(0, 20).map((sub) => (
-                      <div key={sub.id} className="grid grid-cols-3 gap-2 border-b border-ink-50 px-4 py-3 text-sm text-ink-700 last:border-b-0">
-                        <span className="font-medium text-ink-900">{sub.company?.name ?? '-'}</span>
+                      <div key={sub.id} className="grid grid-cols-3 gap-2 border-b border-ink-50 px-4 py-3 text-sm text-ink-700 last:border-b-0 dark:border-slate-700 dark:text-slate-300">
+                        <span className="font-medium text-ink-900 dark:text-white">{sub.company?.name ?? '-'}</span>
                         <span>{sub.plan?.name ?? '-'}</span>
                         <span>{formatDate(sub.canceledAt)}</span>
                       </div>

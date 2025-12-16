@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { createCompany } from '@/lib/api';
 import { useRequireSuperAdmin } from '@/lib/use-require-super-admin';
 import { Toast } from '@/components/toast';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { formatPhone, formatCnpj, formatCep, digitsOnly } from '@/lib/formatters';
 import type { CreateCompanyInput } from '@/lib/types';
 
@@ -76,29 +77,29 @@ export default function NewCompanyPage() {
   // If user was created successfully, show credentials modal
   if (createdUser) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-ink-50 px-6 py-12">
-        <div className="w-full max-w-md rounded-2xl border border-ink-100 bg-white p-8 shadow-card">
+      <main className="flex min-h-screen items-center justify-center bg-ink-50 px-6 py-12 dark:bg-slate-900">
+        <div className="w-full max-w-md rounded-2xl border border-ink-100 bg-white p-8 shadow-card dark:border-slate-700 dark:bg-slate-800">
           <div className="text-center mb-6">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
-              <svg className="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
+              <svg className="h-6 w-6 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h1 className="text-2xl font-semibold text-ink-900">Empresa Criada!</h1>
-            <p className="mt-2 text-sm text-ink-600">
+            <h1 className="text-2xl font-semibold text-ink-900 dark:text-white">Empresa Criada!</h1>
+            <p className="mt-2 text-sm text-ink-600 dark:text-slate-400">
               Guarde as credenciais abaixo. A senha temporária não será mostrada novamente.
             </p>
           </div>
 
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 mb-6">
-            <p className="text-sm font-semibold text-amber-800 mb-2">Credenciais de acesso:</p>
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 mb-6 dark:border-amber-700 dark:bg-amber-900/30">
+            <p className="text-sm font-semibold text-amber-800 mb-2 dark:text-amber-300">Credenciais de acesso:</p>
             <div className="space-y-2 text-sm">
-              <p className="text-amber-700">
+              <p className="text-amber-700 dark:text-amber-400">
                 <span className="font-medium">Email:</span> {createdUser.email}
               </p>
-              <p className="text-amber-700">
+              <p className="text-amber-700 dark:text-amber-400">
                 <span className="font-medium">Senha temporária:</span>{' '}
-                <code className="rounded bg-amber-100 px-2 py-0.5 font-mono">{createdUser.temporaryPassword}</code>
+                <code className="rounded bg-amber-100 px-2 py-0.5 font-mono dark:bg-amber-800">{createdUser.temporaryPassword}</code>
               </p>
             </div>
           </div>
@@ -106,7 +107,7 @@ export default function NewCompanyPage() {
           <div className="flex gap-3">
             <Link
               href="/super-admin/dashboard"
-              className="flex-1 rounded-xl border border-ink-200 px-4 py-3 text-center text-sm font-semibold text-ink-700 hover:bg-ink-50"
+              className="flex-1 rounded-xl border border-ink-200 px-4 py-3 text-center text-sm font-semibold text-ink-700 hover:bg-ink-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
             >
               Voltar ao Dashboard
             </Link>
@@ -126,7 +127,7 @@ export default function NewCompanyPage() {
                 setState('');
                 setZipCode('');
               }}
-              className="flex-1 rounded-xl bg-ink-900 px-4 py-3 text-sm font-semibold text-white shadow-card hover:bg-ink-800"
+              className="flex-1 rounded-xl bg-ink-900 px-4 py-3 text-sm font-semibold text-white shadow-card hover:bg-ink-800 dark:bg-slate-600 dark:hover:bg-slate-500"
             >
               Criar Outra
             </button>
@@ -137,31 +138,34 @@ export default function NewCompanyPage() {
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-4xl px-6 py-12">
+    <main className="mx-auto min-h-screen max-w-4xl px-6 py-12 dark:bg-slate-900">
       {/* Header */}
       <header className="mb-8">
-        <Link
-          href="/super-admin/dashboard"
-          className="inline-flex items-center gap-2 text-sm font-medium text-ink-500 hover:text-ink-700 mb-4"
-        >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Voltar ao Dashboard
-        </Link>
-        <h1 className="text-3xl font-semibold text-ink-900">Nova Empresa</h1>
-        <p className="mt-1 text-sm text-ink-600">
+        <div className="flex items-center justify-between mb-4">
+          <Link
+            href="/super-admin/dashboard"
+            className="inline-flex items-center gap-2 text-sm font-medium text-ink-500 hover:text-ink-700 dark:text-slate-400 dark:hover:text-slate-200"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Voltar ao Dashboard
+          </Link>
+          <ThemeToggle />
+        </div>
+        <h1 className="text-3xl font-semibold text-ink-900 dark:text-white">Nova Empresa</h1>
+        <p className="mt-1 text-sm text-ink-600 dark:text-slate-400">
           Preencha os dados abaixo para criar uma nova empresa. Um usuário administrador será criado automaticamente.
         </p>
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Company Information */}
-        <section className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card">
-          <h2 className="text-lg font-semibold text-ink-900 mb-4">Dados da Empresa</h2>
+        <section className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card dark:border-slate-700 dark:bg-slate-800">
+          <h2 className="text-lg font-semibold text-ink-900 mb-4 dark:text-white">Dados da Empresa</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-ink-700 mb-1" htmlFor="name">
+              <label className="block text-sm font-medium text-ink-700 mb-1 dark:text-slate-300" htmlFor="name">
                 Nome da Empresa *
               </label>
               <input
@@ -170,12 +174,12 @@ export default function NewCompanyPage() {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400"
+                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:border-slate-500"
                 placeholder="Nome da empresa"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1" htmlFor="email">
+              <label className="block text-sm font-medium text-ink-700 mb-1 dark:text-slate-300" htmlFor="email">
                 Email *
               </label>
               <input
@@ -184,12 +188,12 @@ export default function NewCompanyPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400"
+                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:border-slate-500"
                 placeholder="empresa@exemplo.com"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1" htmlFor="phone">
+              <label className="block text-sm font-medium text-ink-700 mb-1 dark:text-slate-300" htmlFor="phone">
                 Telefone *
               </label>
               <input
@@ -198,12 +202,12 @@ export default function NewCompanyPage() {
                 required
                 value={phone}
                 onChange={(e) => setPhone(formatPhone(e.target.value))}
-                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400"
+                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:border-slate-500"
                 placeholder="(11) 99999-9999"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1" htmlFor="cnpj">
+              <label className="block text-sm font-medium text-ink-700 mb-1 dark:text-slate-300" htmlFor="cnpj">
                 CNPJ
               </label>
               <input
@@ -211,12 +215,12 @@ export default function NewCompanyPage() {
                 type="text"
                 value={cnpj}
                 onChange={(e) => setCnpj(formatCnpj(e.target.value))}
-                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400"
+                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:border-slate-500"
                 placeholder="00.000.000/0000-00"
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-ink-700 mb-1" htmlFor="description">
+              <label className="block text-sm font-medium text-ink-700 mb-1 dark:text-slate-300" htmlFor="description">
                 Descrição
               </label>
               <textarea
@@ -224,7 +228,7 @@ export default function NewCompanyPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
-                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400 resize-none"
+                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400 resize-none dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:border-slate-500"
                 placeholder="Descrição opcional da empresa..."
               />
             </div>
@@ -232,11 +236,11 @@ export default function NewCompanyPage() {
         </section>
 
         {/* Address Information */}
-        <section className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card">
-          <h2 className="text-lg font-semibold text-ink-900 mb-4">Endereço</h2>
+        <section className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card dark:border-slate-700 dark:bg-slate-800">
+          <h2 className="text-lg font-semibold text-ink-900 mb-4 dark:text-white">Endereço</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1" htmlFor="zipCode">
+              <label className="block text-sm font-medium text-ink-700 mb-1 dark:text-slate-300" htmlFor="zipCode">
                 CEP *
               </label>
               <input
@@ -245,12 +249,12 @@ export default function NewCompanyPage() {
                 required
                 value={zipCode}
                 onChange={(e) => setZipCode(formatCep(e.target.value))}
-                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400"
+                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:border-slate-500"
                 placeholder="00000-000"
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-ink-700 mb-1" htmlFor="street">
+              <label className="block text-sm font-medium text-ink-700 mb-1 dark:text-slate-300" htmlFor="street">
                 Rua *
               </label>
               <input
@@ -259,12 +263,12 @@ export default function NewCompanyPage() {
                 required
                 value={street}
                 onChange={(e) => setStreet(e.target.value)}
-                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400"
+                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:border-slate-500"
                 placeholder="Rua, Avenida, etc."
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1" htmlFor="number">
+              <label className="block text-sm font-medium text-ink-700 mb-1 dark:text-slate-300" htmlFor="number">
                 Número *
               </label>
               <input
@@ -273,12 +277,12 @@ export default function NewCompanyPage() {
                 required
                 value={number}
                 onChange={(e) => setNumber(e.target.value)}
-                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400"
+                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:border-slate-500"
                 placeholder="123"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1" htmlFor="complement">
+              <label className="block text-sm font-medium text-ink-700 mb-1 dark:text-slate-300" htmlFor="complement">
                 Complemento
               </label>
               <input
@@ -286,12 +290,12 @@ export default function NewCompanyPage() {
                 type="text"
                 value={complement}
                 onChange={(e) => setComplement(e.target.value)}
-                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400"
+                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:border-slate-500"
                 placeholder="Apto, Sala, etc."
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1" htmlFor="neighborhood">
+              <label className="block text-sm font-medium text-ink-700 mb-1 dark:text-slate-300" htmlFor="neighborhood">
                 Bairro *
               </label>
               <input
@@ -300,12 +304,12 @@ export default function NewCompanyPage() {
                 required
                 value={neighborhood}
                 onChange={(e) => setNeighborhood(e.target.value)}
-                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400"
+                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:border-slate-500"
                 placeholder="Bairro"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1" htmlFor="city">
+              <label className="block text-sm font-medium text-ink-700 mb-1 dark:text-slate-300" htmlFor="city">
                 Cidade *
               </label>
               <input
@@ -314,12 +318,12 @@ export default function NewCompanyPage() {
                 required
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400"
+                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:border-slate-500"
                 placeholder="Cidade"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1" htmlFor="state">
+              <label className="block text-sm font-medium text-ink-700 mb-1 dark:text-slate-300" htmlFor="state">
                 Estado *
               </label>
               <input
@@ -329,7 +333,7 @@ export default function NewCompanyPage() {
                 maxLength={2}
                 value={state}
                 onChange={(e) => setState(e.target.value.toUpperCase())}
-                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400"
+                className="w-full rounded-xl border border-ink-200 px-4 py-3 text-ink-900 outline-none focus:border-ink-400 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:focus:border-slate-500"
                 placeholder="SP"
               />
             </div>
@@ -340,14 +344,14 @@ export default function NewCompanyPage() {
         <div className="flex gap-4">
           <Link
             href="/super-admin/dashboard"
-            className="rounded-xl border border-ink-200 px-6 py-3 text-sm font-semibold text-ink-700 hover:bg-ink-50"
+            className="rounded-xl border border-ink-200 px-6 py-3 text-sm font-semibold text-ink-700 hover:bg-ink-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
           >
             Cancelar
           </Link>
           <button
             type="submit"
             disabled={loading || authLoading}
-            className="flex-1 rounded-xl bg-ink-900 px-6 py-3 text-sm font-semibold text-white shadow-card transition hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 rounded-xl bg-ink-900 px-6 py-3 text-sm font-semibold text-white shadow-card transition hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed dark:bg-slate-600 dark:hover:bg-slate-500"
           >
             {loading ? 'A criar...' : 'Criar Empresa'}
           </button>
