@@ -30,7 +30,7 @@ export function MultiStepForm<TData = Record<string, unknown>>({ children, onSub
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
-      // Last step - submit the form
+      // Último passo - submeter o formulário
       onSubmit();
     }
   };

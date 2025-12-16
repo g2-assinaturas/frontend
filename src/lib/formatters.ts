@@ -50,3 +50,29 @@ export function formatHouseNumber(value: string) {
 export function formatUf(value: string) {
   return (value ?? '').slice(0, 2).toUpperCase();
 }
+
+/**
+ * Formata valor monetário em BRL
+ * @param value - O valor em centavos (divide por 100)
+ * @param currency - Código da moeda (padrão: BRL)
+ */
+export function formatCurrency(value: number, currency: string = 'BRL'): string {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: currency,
+  }).format(value / 100);
+}
+
+/**
+ * Formata data para string localizada
+ * @param dateString - String de data ISO ou null
+ * @param format - 'short' para mês abreviado, 'long' para nome completo do mês
+ */
+export function formatDate(dateString: string | null | undefined, format: 'short' | 'long' = 'short'): string {
+  if (!dateString) return '-';
+  return new Date(dateString).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: format,
+    year: 'numeric',
+  });
+}

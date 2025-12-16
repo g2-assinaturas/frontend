@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from './auth-context';
 
 /**
- * Authentication guard hook for company user pages
- * Redirects to login page if user is not authenticated
- * Use this hook at the top of any page that requires company authentication
- * @returns Authentication context with token, user, login, logout, and loading state
+ * Hook de guarda de autenticação para páginas de usuário da empresa
+ * Redireciona para página de login se usuário não estiver autenticado
+ * Use este hook no topo de qualquer página que requer autenticação da empresa
+ * @returns Contexto de autenticação com token, user, login, logout e loading state
  */
 export function useRequireAuth() {
   const router = useRouter();

@@ -9,16 +9,22 @@ import { formatCep, formatHouseNumber, formatUf } from '@/lib/formatters';
 async function fetchViaCep(zip: string) {
   const cleaned = zip.replace(/\D/g, '');
   if (cleaned.length !== 8) return null;
-  const res = await fetch(`https://viacep.com.br/ws/${cleaned}/json/`);
-  if (!res.ok) return null;
-  const data = await res.json();
-  if (data.erro) return null;
-  return data as {
-    logradouro?: string;
-    bairro?: string;
-    localidade?: string;
-    uf?: string;
-  };
+  
+  try {
+    const res = await fetch(`https://viacep.com.br/ws/${cleaned}/json/`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.erro) return null;
+    return data as {
+      logradouro?: string;
+      bairro?: string;
+      localidade?: string;
+      uf?: string;
+    };
+  } catch {
+    // Erro de rede ou timeout - falha silenciosamente e permite preenchimento manual
+    return null;
+  }
 }
 
 type Props = {

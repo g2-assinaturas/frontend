@@ -9,7 +9,7 @@ import { Toast } from '@/components/toast';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 /**
- * Password validation regex - must have uppercase, lowercase, number, and symbol
+ * Regex de validação de senha - deve ter maiúscula, minúscula, número e símbolo
  */
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/;
 
@@ -67,12 +67,12 @@ export default function ProfilePage() {
       
       setToast({ message: result.message || 'Senha alterada com sucesso!', kind: 'success' });
       
-      // Clear form
+      // Limpa formulário
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
       
-      // If requires reauth, logout after a delay
+      // Se requer reautenticação, faz logout após delay
       if (result.data?.requiresReauth) {
         setTimeout(() => {
           logout();

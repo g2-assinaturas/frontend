@@ -16,7 +16,7 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
       title={theme === 'dark' ? 'Modo claro' : 'Modo escuro'}
     >
       {theme === 'dark' ? (
-        // Sun icon for dark mode (click to go light)
+        // Ícone de sol para modo escuro (clique para ir ao claro)
         <svg
           className="h-5 w-5 text-amber-400"
           fill="none"
@@ -31,7 +31,7 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
           />
         </svg>
       ) : (
-        // Moon icon for light mode (click to go dark)
+        // Ícone de lua para modo claro (clique para ir ao escuro)
         <svg
           className="h-5 w-5 text-ink-600"
           fill="none"

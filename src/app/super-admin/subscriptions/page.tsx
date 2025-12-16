@@ -7,6 +7,8 @@ import { useRequireSuperAdmin } from '@/lib/use-require-super-admin';
 import type { SubscriptionDetails, SubscriptionStats, SubscriptionStatus } from '@/lib/types';
 import { Toast } from '@/components/toast';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { StatsCard } from '@/components/stats-card';
+import { formatCurrency, formatDate } from '@/lib/formatters';
 
 const STATUS_LABELS: Record<SubscriptionStatus, string> = {
   ACTIVE: 'Ativa',
@@ -25,31 +27,6 @@ const STATUS_COLORS: Record<SubscriptionStatus, string> = {
   EXPIRED: 'bg-ink-100 text-ink-600 dark:bg-slate-700 dark:text-slate-400',
   PAUSED: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
 };
-
-function formatCurrency(value: number, currency?: string): string {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: currency ?? 'BRL',
-  }).format(value / 100);
-}
-
-function formatDate(dateString: string | null): string {
-  if (!dateString) return '-';
-  return new Date(dateString).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
-}
-
-function StatsCard({ title, value, color }: { title: string; value: number; color: string }) {
-  return (
-    <div className={`rounded-xl p-4 ${color}`}>
-      <p className="text-sm font-medium opacity-80">{title}</p>
-      <p className="text-2xl font-bold">{value}</p>
-    </div>
-  );
-}
 
 const STATS_COLORS = {
   total: 'bg-ink-100 text-ink-700 dark:bg-slate-700 dark:text-slate-300',

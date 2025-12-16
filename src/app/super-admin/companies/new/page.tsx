@@ -16,14 +16,14 @@ export default function NewCompanyPage() {
   const [toast, setToast] = useState<{ message: string; kind: 'error' | 'success' | 'info' } | null>(null);
   const [createdUser, setCreatedUser] = useState<{ email: string; temporaryPassword: string } | null>(null);
   
-  // Company form state
+  // Estado do formulário da empresa
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [cnpj, setCnpj] = useState('');
   const [description, setDescription] = useState('');
   
-  // Address form state
+  // Estado do formulário do endereço
   const [street, setStreet] = useState('');
   const [number, setNumber] = useState('');
   const [complement, setComplement] = useState('');
@@ -59,7 +59,7 @@ export default function NewCompanyPage() {
 
       const result = await createCompany(companyData, token);
       
-      // Show the created user credentials
+      // Exibe as credenciais do usuário criado
       setCreatedUser({
         email: result.companyUser.email,
         temporaryPassword: result.companyUser.temporaryPassword,
@@ -74,7 +74,7 @@ export default function NewCompanyPage() {
     }
   };
 
-  // If user was created successfully, show credentials modal
+  // Se usuário foi criado com sucesso, exibe modal de credenciais
   if (createdUser) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-ink-50 px-6 py-12 dark:bg-slate-900">
