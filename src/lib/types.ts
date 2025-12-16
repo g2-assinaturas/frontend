@@ -211,3 +211,142 @@ export interface CreateCompanyResponse {
   };
   message: string;
 }
+
+// ===== PHASE 4: SUBSCRIPTION MANAGEMENT TYPES =====
+
+export type SubscriptionStatus = 'ACTIVE' | 'TRIALING' | 'PAST_DUE' | 'CANCELED' | 'EXPIRED' | 'PAUSED';
+
+export interface SubscriptionDetails {
+  id: string;
+  status: SubscriptionStatus;
+  startDate: string | null;
+  endDate: string | null;
+  currentPeriodStart: string | null;
+  currentPeriodEnd: string | null;
+  cancelAtPeriodEnd: boolean;
+  canceledAt: string | null;
+  createdAt: string;
+  company: {
+    id: string;
+    name: string;
+    email: string | null;
+  };
+  plan: {
+    id: string;
+    name: string;
+    price: number;
+    currency: string;
+    interval: PlanInterval;
+  };
+  customer?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
+
+export interface SubscriptionFilters {
+  status?: SubscriptionStatus;
+  companyId?: string;
+  planId?: string;
+}
+
+export interface SubscriptionStats {
+  total: number;
+  active: number;
+  trialing: number;
+  pastDue: number;
+  canceled: number;
+  expired: number;
+  paused: number;
+}
+
+// ===== PHASE 4: INVOICE MANAGEMENT TYPES =====
+
+export type InvoiceStatus = 'DRAFT' | 'PENDING' | 'PAID' | 'OVERDUE' | 'CANCELED' | 'REFUNDED';
+
+export interface InvoiceDetails {
+  id: string;
+  amount: number;
+  currency: string;
+  status: InvoiceStatus;
+  description?: string | null;
+  issuedAt: string | null;
+  dueDate: string | null;
+  paidAt: string | null;
+  createdAt: string;
+  company: {
+    id: string;
+    name: string;
+    email: string | null;
+  };
+  subscription?: {
+    id: string;
+    plan: {
+      id: string;
+      name: string;
+    };
+  };
+}
+
+export interface InvoiceFilters {
+  status?: InvoiceStatus;
+  companyId?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface InvoiceStats {
+  total: number;
+  paid: number;
+  pending: number;
+  overdue: number;
+  canceled: number;
+  totalRevenue: number;
+  totalPending: number;
+}
+
+// ===== PHASE 4: REPORTS TYPES =====
+
+export interface RevenueReport {
+  totalRevenue: number;
+  currency: string;
+  invoiceCount: number;
+  averageInvoiceAmount: number;
+  startDate?: string;
+  endDate?: string;
+  invoices: Array<{
+    id: string;
+    amount: number;
+    currency: string;
+    paidAt: string | null;
+    company: {
+      id: string;
+      name: string;
+    };
+    subscription?: {
+      plan: {
+        name: string;
+      };
+    };
+  }>;
+}
+
+export interface ChurnReport {
+  periodMonths: number;
+  totalCanceled: number;
+  totalActive: number;
+  churnRate: number;
+  canceledSubscriptions: Array<{
+    id: string;
+    canceledAt: string | null;
+    company: {
+      id: string;
+      name: string;
+    };
+    plan: {
+      id: string;
+      name: string;
+    };
+  }>;
+}

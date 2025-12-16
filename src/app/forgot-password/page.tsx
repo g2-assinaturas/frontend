@@ -22,7 +22,7 @@ export default function ForgotPasswordPage() {
       setToast({ message: result.message, kind: 'success' });
 
       // Em desenvolvimento, o token é retornado para testes
-      if (result.token) {
+      if (result.token && process.env.NODE_ENV === 'development') {
         console.log('Token de reset (apenas para desenvolvimento):', result.token);
       }
     } catch (err) {
