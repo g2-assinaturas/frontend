@@ -35,7 +35,7 @@ export default function NewCompanyPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!token) return;
-    
+
     setLoading(true);
     setToast(null);
 
@@ -67,7 +67,10 @@ export default function NewCompanyPage() {
       
       setToast({ message: result.message, kind: 'success' });
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Erro ao criar empresa.';
+      let message = 'Erro ao criar empresa.';
+      if (err instanceof Error) {
+        message = err.message;
+      }
       setToast({ message, kind: 'error' });
     } finally {
       setLoading(false);

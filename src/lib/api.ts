@@ -224,11 +224,19 @@ export async function getCompanyDetails(id: string, token: string): Promise<Comp
 
 /** Create a new company with address and initial admin user */
 export async function createCompany(data: CreateCompanyInput, token: string): Promise<CreateCompanyResponse> {
-  return apiFetch<CreateCompanyResponse>('/super-admin/companies', withAuth(token, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  }));
+  try {
+    return await apiFetch<CreateCompanyResponse>('/super-admin/companies', withAuth(token, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }));
+  } catch (error: unknown) {
+    if (error instanceof Response && error.status === 409) {
+      const errorDetails = await error.json();
+      throw new Error(errorDetails.message || 'Conflict: Duplicate company data');
+    }
+    throw error;
+  }
 }
 
 /** Update company information */
