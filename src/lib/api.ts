@@ -218,7 +218,8 @@ export async function getDashboardMetrics(token: string): Promise<DashboardMetri
 
 /** Get detailed information about a specific company */
 export async function getCompanyDetails(id: string, token: string): Promise<CompanyDetails> {
-  return apiFetch<CompanyDetails>(`/super-admin/companies/${id}`, withAuth(token, { cache: 'no-store' }));
+  const response = await apiFetch<{ success: boolean; data: CompanyDetails }>(`/super-admin/companies/${id}`, withAuth(token, { cache: 'no-store' }));
+  return response.data;
 }
 
 /** Create a new company with address and initial admin user */

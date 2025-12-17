@@ -69,10 +69,12 @@ export default function CompanyDetailsPage() {
     if (!token || !company) return;
     setDeleting(true);
     try {
+      console.log('Deletando empresa com ID:', company.id);
       await deleteCompany(company.id, token);
       setToast({ message: 'Empresa eliminada com sucesso.', kind: 'success' });
       setTimeout(() => router.push('/super-admin/dashboard'), 1500);
     } catch (err) {
+      console.error('Erro ao deletar empresa:', err);
       const message = err instanceof Error ? err.message : 'Falha ao eliminar empresa.';
       setToast({ message, kind: 'error' });
     } finally {
@@ -208,9 +210,9 @@ export default function CompanyDetailsPage() {
           {/* Users */}
           <section className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card dark:border-slate-700 dark:bg-slate-800">
             <h2 className="text-lg font-semibold text-ink-900 mb-4 dark:text-white">
-              Usuários ({company.users.length})
+              Usuários ({company.users?.length ?? 0})
             </h2>
-            {company.users.length === 0 ? (
+            {!company.users || company.users.length === 0 ? (
               <p className="text-sm text-ink-500 dark:text-slate-400">Nenhum usuário cadastrado.</p>
             ) : (
               <div className="space-y-3">
@@ -234,9 +236,9 @@ export default function CompanyDetailsPage() {
           {/* Subscriptions */}
           <section className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card dark:border-slate-700 dark:bg-slate-800">
             <h2 className="text-lg font-semibold text-ink-900 mb-4 dark:text-white">
-              Assinaturas Recentes ({company.subscriptions.length})
+              Assinaturas Recentes ({company.subscriptions?.length ?? 0})
             </h2>
-            {company.subscriptions.length === 0 ? (
+            {!company.subscriptions || company.subscriptions.length === 0 ? (
               <p className="text-sm text-ink-500 dark:text-slate-400">Nenhuma assinatura encontrada.</p>
             ) : (
               <div className="space-y-3">
@@ -270,27 +272,27 @@ export default function CompanyDetailsPage() {
             <dl className="space-y-4">
               <div className="flex justify-between">
                 <dt className="text-sm text-ink-500 dark:text-slate-400">Usuários</dt>
-                <dd className="text-sm font-semibold text-ink-900 dark:text-white">{company.users.length}</dd>
+                <dd className="text-sm font-semibold text-ink-900 dark:text-white">{company.users?.length ?? 0}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-sm text-ink-500 dark:text-slate-400">Planos</dt>
-                <dd className="text-sm font-semibold text-ink-900 dark:text-white">{company.plans.length}</dd>
+                <dd className="text-sm font-semibold text-ink-900 dark:text-white">{company.plans?.length ?? 0}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-sm text-ink-500 dark:text-slate-400">Clientes</dt>
-                <dd className="text-sm font-semibold text-ink-900 dark:text-white">{company.customers.length}</dd>
+                <dd className="text-sm font-semibold text-ink-900 dark:text-white">{company.customers?.length ?? 0}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-sm text-ink-500 dark:text-slate-400">Assinaturas</dt>
-                <dd className="text-sm font-semibold text-ink-900 dark:text-white">{company.subscriptions.length}</dd>
+                <dd className="text-sm font-semibold text-ink-900 dark:text-white">{company.subscriptions?.length ?? 0}</dd>
               </div>
             </dl>
           </section>
 
           {/* Plans */}
           <section className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card dark:border-slate-700 dark:bg-slate-800">
-            <h2 className="text-lg font-semibold text-ink-900 mb-4 dark:text-white">Planos ({company.plans.length})</h2>
-            {company.plans.length === 0 ? (
+            <h2 className="text-lg font-semibold text-ink-900 mb-4 dark:text-white">Planos ({company.plans?.length ?? 0})</h2>
+            {!company.plans || company.plans.length === 0 ? (
               <p className="text-sm text-ink-500 dark:text-slate-400">Nenhum plano cadastrado.</p>
             ) : (
               <div className="space-y-2">
@@ -307,7 +309,7 @@ export default function CompanyDetailsPage() {
           {/* Recent Customers */}
           <section className="rounded-2xl border border-ink-100 bg-white p-6 shadow-card dark:border-slate-700 dark:bg-slate-800">
             <h2 className="text-lg font-semibold text-ink-900 mb-4 dark:text-white">Clientes Recentes</h2>
-            {company.customers.length === 0 ? (
+            {!company.customers || company.customers.length === 0 ? (
               <p className="text-sm text-ink-500 dark:text-slate-400">Nenhum cliente encontrado.</p>
             ) : (
               <div className="space-y-2">
