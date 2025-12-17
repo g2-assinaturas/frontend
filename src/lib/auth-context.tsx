@@ -40,12 +40,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = useCallback(async (emailOrCpf: string, password: string) => {
+    console.log('Login attempt for:', emailOrCpf);
     setLoading(true);
     try {
-      const { accessToken, user: loggedUser } = await loginCompany(emailOrCpf, password);
-      localStorage.setItem('token', accessToken);
-      setToken(accessToken);
-      setUser(loggedUser);
+      const response = await loginCompany(emailOrCpf, password);
+      console.log('Login response:', response);
+      
+      if (!response.accessToken) {
+        console.error('No accessToken in response!');
+        throw new Error('Token não recebido');
+      }
+      
+      localStorage.setItem('token', response.accessToken);
+      console.log('Token saved to localStorage');
+      
+      setToken(response.accessToken);
+      setUser(response.user);
+      console.log('Login successful! User:', response.user);
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
     } finally {
       setLoading(false);
     }
