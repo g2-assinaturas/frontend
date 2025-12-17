@@ -81,7 +81,7 @@ export async function loginCompany(emailOrCpf: string, password: string): Promis
   return apiFetch<LoginResponse>('/company-auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ emailOrCpf, password }),
+    body: JSON.stringify({ emailOrCpf: emailOrCpf.trim(), password }),
   });
 }
 
