@@ -136,9 +136,9 @@ export async function companyProfile(token: string): Promise<{ user: CompanyUser
 
 // ===== SUBSCRIPTION & PLAN ENDPOINTS =====
 
-/** Fetch all available subscription plans (public endpoint) */
-export async function listPlans(): Promise<Plan[]> {
-  return apiFetch<Plan[]>('/subscriptions/plans', { cache: 'no-store' });
+/** Fetch all available subscription plans (requires authentication) */
+export async function listPlans(token: string): Promise<Plan[]> {
+  return apiFetch<Plan[]>('/subscriptions/plans', withAuth(token, { cache: 'no-store' }));
 }
 
 /** Create checkout session for a subscription plan */
