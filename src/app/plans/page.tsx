@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { listPlans } from '@/lib/api';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { useAuth } from '@/lib/auth-context';
 import type { Plan } from '@/lib/types';
 
 function formatPrice(value: number, currency = 'BRL') {
@@ -11,16 +12,23 @@ function formatPrice(value: number, currency = 'BRL') {
 }
 
 export default function PlansPage() {
+  const { token } = useAuth();
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    listPlans()
+    if (!token) {
+      setError('Você precisa estar autenticado para ver os planos.');
+      setLoading(false);
+      return;
+    }
+
+    listPlans(token)
       .then(setPlans)
       .catch((err) => setError(err instanceof Error ? err.message : 'Erro ao carregar planos.'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [token]);
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-6 py-12 dark:bg-slate-900">
